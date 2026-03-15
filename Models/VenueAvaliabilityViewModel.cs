@@ -10,7 +10,7 @@ namespace EventEase_st10157545_POE.Models
 
         [Required]
         [Display(Name = "Venue")]
-        public string ? VenueID { get; set; }
+        public int ? VenueID { get; set; }
 
         //Nullable - may be blocked for maintenance without a booking
         [Display(Name = "Booking (if applicable)")]

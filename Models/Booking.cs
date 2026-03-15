@@ -27,16 +27,16 @@ namespace EventEase_st10157545_POE.Models
         [Required]
         [DataType(DataType.Date)]
         [Display(Name = "Event Date")]
-        public DateOnly EventDate { set; get; }
+        public DateTime EventDate { set; get; }
 
         [Required]
         [DataType(DataType.Time)]
         [Display(Name ="Start Time")]
-        public TimeOnly StartTime { set; get; }
+        public TimeSpan StartTime { set; get; }
         [Required]
         [DataType(DataType.Time)]
         [Display(Name = "End Time")]
-        public TimeOnly EndTime { set; get; }
+        public TimeSpan EndTime { set; get; }
 
         [Required, Range(1,10000)]
         [Display(Name = "Guest Count")]
@@ -47,7 +47,7 @@ namespace EventEase_st10157545_POE.Models
 
         [Column(TypeName = "decimal(10,2)")]
         [Display(Name = "Total Price (R)")]
-        public Double TotalPrice { set; get; }
+        public decimal TotalPrice { set; get; }
 
         //Confirmed/ Pending / Cancelled
         [Required, StringLength(20)]
