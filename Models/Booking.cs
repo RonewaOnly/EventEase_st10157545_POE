@@ -6,24 +6,23 @@ namespace EventEase_st10157545_POE.Models
     public class Booking
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string BookingID { get; set; }
+        public int BookingID { get; set; }
 
         [Required]
         [Display(Name = "Customer")]
-        public string CustomerID { set; get; } //this is foregin Key for the Customer table
+        public int CustomerID { set; get; } //this is foregin Key for the Customer table
 
         [Required]
         [Display(Name = "Venue")]
-        public string VenueID { set; get; } // this is a foregin Key for the Venue Table
+        public int VenueID { set; get; } // this is a foregin Key for the Venue Table
 
         [Required]
         [Display(Name = "Event")]
-        public string EventID { set; get; } // this is a foregin Key for the Event Table
+        public int EventID { set; get; } // this is a foregin Key for the Event Table
 
         [Required]
         [Display(Name = "Captured By")]
-        public string SpecialistID { set; get; } // this is a foregin Key for the BookingSpecialist Table 
+        public int SpecialistID { set; get; } // this is a foregin Key for the BookingSpecialist Table 
 
         [Required]
         [DataType(DataType.Date)]

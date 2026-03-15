@@ -5,20 +5,33 @@ namespace EventEase_st10157545_POE.Models
 {
     public class EventViewModel
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int EventId { get; set; }
+        [Key]
+        public int EventID { get; set; }
 
-        [Required]
+        [Required, StringLength(250)]
+        [Display(Name = "Event Name")]
         public string? EventName { get; set; }
 
 
+        //Allows an event to be captured before a venue is assigned
+        [Display(Name = "Preferred Date")]
         [DataType(DataType.Date)]
-        [Required]
-        public DateOnly EventDate { get; set; }
+        public DateTime? PreferredDate { get; set; }
 
-        [Required]
-        public string? Description {  get; set; }  
+        [Display(Name = "Description")]        
+        public string? Description {  get; set; }
 
-        public string? VenueId { get; set; }
+        [Display(Name = "Expected Guests")]
+        [Range(1, 10000)]
+        public int? ExpectedGuests { get; set;  }
+
+        //Pending = no venue yet; Confirmed = venue booked; Cancelled
+        [StringLength(25)]
+        public string Status { get; set; } = "Pending";
+
+
+        //Referenced Table
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+
     }
 }
