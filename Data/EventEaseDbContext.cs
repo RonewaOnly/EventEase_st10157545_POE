@@ -57,7 +57,7 @@ namespace EventEase_st10157545_POE.Data
                 FirstName = "Admin",
                 LastName = "User",
                 Email = "admin@eventease.co.za",
-                Password = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
+                Password = "$2b$11$zWmUQTosMUfdINFVTppjbOmy6W5kuhO9CyP6Sc4sZzCsA3trwcO0y",
                 Role = "Admin"
             });
 
