@@ -1,5 +1,56 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model IEnumerable<EventEase_st10157545_POE.Models.BookingSpecialistViewModelcs>
 @{
+    ViewData["Title"] = "Booking Specialists";
 }
+
+<div class="page-header">
+    <div>
+        <h1>Booking Specialists</h1>
+        <p>Staff members who capture and manage bookings</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">+ Add Specialist</a>
+</div>
+
+<div class="card">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="5" class="text-muted" style="padding:24px;text-align:center">No specialists found.</td></tr>
+                }
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@s.SpecialistID</td>
+                        <td>@s.FullName</td>
+                        <td>@s.Email</td>
+                        <td>
+                            <span class="badge @(s.Role == "Admin" ? "badge-confirmed" : "badge-pending")">@s.Role</span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a asp-action="Edit" asp-route-id="@s.SpecialistID" class="btn btn-secondary btn-sm">Edit</a>
+                                @if (s.SpecialistID != 1)
+                                {
+                                    <form asp-action="Delete" asp-route-id="@s.SpecialistID" method="post" style="display:inline"
+                                          onsubmit="return confirm('Remove this specialist?')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
