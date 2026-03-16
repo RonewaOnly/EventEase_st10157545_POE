@@ -1,5 +1,83 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model IEnumerable<EventEase_st10157545_POE.Models.Booking>
 @{
+    ViewData["Title"] = "Day Schedule";
+    var date = (DateTime)ViewData["Date"]!;
+    int? selectedVenue = ViewData["SelectedVenue"] as int?;
+    var venues = ViewData["Venues"] as IEnumerable<EventEase_st10157545_POE.Models.VenueViewModel> ?? new List<EventEase_st10157545_POE.Models.VenueViewModel>();
 }
+
+<div class="page-header">
+    <div>
+        <h1>@date.ToString("dddd, dd MMMM yyyy")</h1>
+        <p>All bookings for this day</p>
+    </div>
+    <div class="btn-group">
+        <a asp-action="Day" asp-route-date="@date.AddDays(-1).ToString("yyyy-MM-dd")"
+           asp-route-venueId="@selectedVenue" class="btn btn-secondary btn-sm">← Yesterday</a>
+        <a asp-action="Day" asp-route-date="@date.AddDays(1).ToString("yyyy-MM-dd")"
+           asp-route-venueId="@selectedVenue" class="btn btn-secondary btn-sm">Tomorrow →</a>
+        <a asp-action="Index" class="btn btn-secondary">Month View</a>
+    </div>
+</div>
+
+<form method="get" class="search-bar">
+    <div class="form-group">
+        <label>Date</label>
+        <input type="date" name="date" value="@date.ToString("yyyy-MM-dd")" class="form-control" style="width:180px" />
+    </div>
+    <div class="form-group">
+        <label>Venue</label>
+        <select name="venueId" class="form-control" style="width:200px">
+            <option value="">All venues</option>
+            @foreach (var v in venues)
+            {
+                <option value="@v.VenueID" selected="@(selectedVenue == v.VenueID)">@v.VenueName</option>
+            }
+        </select>
+    </div>
+    <div class="form-group" style="justify-content:flex-end">
+        <button type="submit" class="btn btn-primary">Go</button>
+    </div>
+</form>
+
+<div class="card">
+    <div class="card-header">
+        <h2>@Model.Count() booking(s)</h2>
+        <a asp-controller="Bookings" asp-action="Create" class="btn btn-primary btn-sm">+ New Booking</a>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="card-body">
+            <p class="text-muted">No bookings for this day.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Time</th><th>Event</th><th>Customer</th><th>Venue</th><th>Guests</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var b in Model)
+                    {
+                        <tr>
+                            <td style="font-weight:500;white-space:nowrap">
+                                @b.StartTime.ToString(@"hh\:mm") – @b.EndTime.ToString(@"hh\:mm")
+                            </td>
+                            <td>@b.Event?.EventName</td>
+                            <td>@b.Customer?.FullName</td>
+                            <td>@b.Venue?.VenueName</td>
+                            <td>@b.GuestCount</td>
+                            <td><span class="badge badge-@b.Status.ToLower()">@b.Status</span></td>
+                            <td><a asp-controller="Bookings" asp-action="Details" asp-route-id="@b.BookingID" class="btn btn-secondary btn-sm">View</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

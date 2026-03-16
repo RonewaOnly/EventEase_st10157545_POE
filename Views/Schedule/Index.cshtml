@@ -1,5 +1,121 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@using System.Globalization
+@model IEnumerable<EventEase_st10157545_POE.Models.Booking>
 @{
+    ViewData["Title"] = "Schedule";
+    int year = (int)ViewData["Year"]!;
+    int month = (int)ViewData["Month"]!;
+    string monthName = (string)ViewData["MonthName"]!;
+    int? selectedVenue = ViewData["SelectedVenue"] as int?;
+    var venues = ViewData["Venues"] as IEnumerable<EventEase_st10157545_POE.Models.VenueViewModel> ?? new List<EventEase_st10157545_POE.Models.VenueViewModel>();
+
+    // Build a dictionary: day number → bookings
+    var byDay = Model.GroupBy(b => b.EventDate.Day).ToDictionary(g => g.Key, g => g.ToList());
+
+    var firstDay = new DateTime(year, month, 1);
+    int startDow = (int)firstDay.DayOfWeek; // 0=Sun
+    int daysInMonth = DateTime.DaysInMonth(year, month);
+
+    var prev = firstDay.AddMonths(-1);
+    var next = firstDay.AddMonths(1);
 }
+
+<div class="page-header">
+    <div>
+        <h1>Schedule</h1>
+        <p>Monthly view of all confirmed and pending bookings</p>
+    </div>
+    <a asp-controller="Bookings" asp-action="Create" class="btn btn-primary">+ New Booking</a>
+</div>
+
+<!-- Controls -->
+<div class="search-bar" style="justify-content:space-between;align-items:center">
+    <div style="display:flex;gap:8px;align-items:center">
+        <a asp-action="Index" asp-route-year="@prev.Year" asp-route-month="@prev.Month" asp-route-venueId="@selectedVenue"
+           class="btn btn-secondary btn-sm">← Prev</a>
+        <strong style="font-size:15px;min-width:160px;text-align:center">@monthName</strong>
+        <a asp-action="Index" asp-route-year="@next.Year" asp-route-month="@next.Month" asp-route-venueId="@selectedVenue"
+           class="btn btn-secondary btn-sm">Next →</a>
+    </div>
+    <form method="get" style="display:flex;gap:8px;align-items:center">
+        <input type="hidden" name="year" value="@year" />
+        <input type="hidden" name="month" value="@month" />
+        <select name="venueId" class="form-control" style="width:200px" onchange="this.form.submit()">
+            <option value="">All venues</option>
+            @foreach (var v in venues)
+            {
+                <option value="@v.VenueID" selected="@(selectedVenue == v.VenueID)">@v.VenueName</option>
+            }
+        </select>
+        <a asp-action="Index" asp-route-year="@year" asp-route-month="@month" class="btn btn-secondary btn-sm">Clear</a>
+    </form>
+    <a asp-action="Day" class="btn btn-secondary btn-sm">Today's Detail</a>
+</div>
+
+<!-- Calendar -->
+<div class="card">
+    <div class="card-body" style="padding:16px">
+
+        <!-- Day headers -->
+        <div class="calendar-grid">
+            @foreach (var d in new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" })
+            {
+                <div class="cal-day-header">@d</div>
+            }
+        </div>
+
+        <!-- Day cells -->
+        <div class="calendar-grid" style="margin-top:4px">
+            @{
+                // Empty cells before month start
+                for (int i = 0; i < startDow; i++)
+                {
+                    <div class="cal-cell other-month"></div>
+                }
+
+                for (int day = 1; day <= daysInMonth; day++)
+                {
+                    bool isToday = (day == DateTime.Today.Day && month == DateTime.Today.Month && year == DateTime.Today.Year);
+                    <div class="cal-cell @(isToday ? "today" : "")">
+                        <div class="cal-date">@day</div>
+                        @if (byDay.ContainsKey(day))
+                        {
+                            @foreach (var b in byDay[day].Take(3))
+                            {
+                                <a class="cal-event @b.Status.ToLower()"
+                                       asp-controller="Bookings" asp-action="Details" asp-route-id="@b.BookingID"
+                                       title="@b.Event?.EventName — @b.Venue?.VenueName (@b.StartTime.ToString(@"hh\:mm"))">
+                                    @b.Event?.EventName
+                                </a>
+                            }
+                            @if (byDay[day].Count > 3)
+                            {
+                                <span style="font-size:10px;color:var(--clr-text-muted)">+@(byDay[day].Count - 3) more</span>
+                            }
+                        }
+                    </div>
+                }
+
+                // Fill remaining cells
+                int cellsUsed = startDow + daysInMonth;
+                int remainder = 7 - (cellsUsed % 7);
+                if (remainder < 7)
+                {
+                    for (int i = 0; i < remainder; i++)
+                    {
+                        <div class="cal-cell other-month"></div>
+                    }
+                }
+            }
+        </div>
+
+        <!-- Legend -->
+        <div style="display:flex;gap:16px;margin-top:12px;font-size:12px">
+            <span><span class="cal-event confirmed" style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:4px;vertical-align:middle"></span>Confirmed</span>
+            <span><span class="cal-event pending" style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:4px;vertical-align:middle"></span>Pending</span>
+        </div>
+    </div>
+</div>
+
