@@ -14,6 +14,7 @@ namespace EventEase_st10157545_POE
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
@@ -31,6 +32,7 @@ namespace EventEase_st10157545_POE
             app.UseRouting();
 
             app.UseAuthorization();
+
 
             app.MapStaticAssets();
             app.MapControllerRoute(

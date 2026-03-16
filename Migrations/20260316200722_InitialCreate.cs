@@ -160,7 +160,7 @@ namespace EventEase_st10157545_POE.Migrations
                     ScheduleID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     VenueID = table.Column<int>(type: "int", nullable: false),
-                    BookingID = table.Column<int>(type: "int", nullable: false),
+                    BookingID = table.Column<int>(type: "int", nullable: true),
                     EventDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     StartTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     EndTime = table.Column<TimeSpan>(type: "time", nullable: false),
@@ -188,7 +188,7 @@ namespace EventEase_st10157545_POE.Migrations
             migrationBuilder.InsertData(
                 table: "BookingSpecialist",
                 columns: new[] { "SpecialistID", "Email", "FirstName", "LastName", "Password", "Role" },
-                values: new object[] { 1, "admin@eventease.co.za", "Admin", "User", "$2b$10$iDZdcLM3h5lzRz0At.bOYeGRibVs.FkTw4xHpug9K0bCN59ZBNkH6", "Admin" });
+                values: new object[] { 1, "admin@eventease.co.za", "Admin", "User", "$2b$11$zWmUQTosMUfdINFVTppjbOmy6W5kuhO9CyP6Sc4sZzCsA3trwcO0y", "Admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuditLog_SpecialistID",
@@ -219,7 +219,8 @@ namespace EventEase_st10157545_POE.Migrations
                 name: "IX_VenueSchedules_BookingID",
                 table: "VenueSchedules",
                 column: "BookingID",
-                unique: true);
+                unique: true,
+                filter: "[BookingID] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VenueSchedules_VenueID",

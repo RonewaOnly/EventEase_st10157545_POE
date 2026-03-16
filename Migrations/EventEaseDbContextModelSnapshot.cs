@@ -161,7 +161,7 @@ namespace EventEase_st10157545_POE.Migrations
                             Email = "admin@eventease.co.za",
                             FirstName = "Admin",
                             LastName = "User",
-                            Password = "$2b$10$iDZdcLM3h5lzRz0At.bOYeGRibVs.FkTw4xHpug9K0bCN59ZBNkH6",
+                            Password = "$2b$11$zWmUQTosMUfdINFVTppjbOmy6W5kuhO9CyP6Sc4sZzCsA3trwcO0y",
                             Role = "Admin"
                         });
                 });
@@ -245,7 +245,7 @@ namespace EventEase_st10157545_POE.Migrations
                     b.Property<string>("BlockReason")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("BookingID")
+                    b.Property<int?>("BookingID")
                         .HasColumnType("int");
 
                     b.Property<TimeSpan>("EndTime")
@@ -271,7 +271,8 @@ namespace EventEase_st10157545_POE.Migrations
                     b.HasKey("ScheduleID");
 
                     b.HasIndex("BookingID")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[BookingID] IS NOT NULL");
 
                     b.HasIndex("VenueID");
 
@@ -368,8 +369,7 @@ namespace EventEase_st10157545_POE.Migrations
                     b.HasOne("EventEase_st10157545_POE.Models.Booking", "Booking")
                         .WithOne("Schedule")
                         .HasForeignKey("EventEase_st10157545_POE.Models.VenueAvaliabilityViewModel", "BookingID")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("EventEase_st10157545_POE.Models.VenueViewModel", "Venue")
                         .WithMany("Schedules")
