@@ -1,5 +1,49 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model EventEase_st10157545_POE.Models.CustomerViewModel
+
 @{
+    ViewData["Title"] = "Edit Customer";
 }
+
+<div class="page-header">
+    <h1>Edit Customer</h1>
+    <a asp-action="Index" class="btn btn-secondary">← Back</a>
+</div>
+
+<div class="card" style="max-width:600px">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="CustomerID" />
+            <input type="hidden" asp-for="CreateAt" />
+            <div class="form-grid">
+                <div class="form-group">
+                    <label asp-for="FirstName"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" type="email" class="form-control" />
+                    <span asp-validation-for="Email" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="phoneNumber"></label>
+                    <input asp-for="phoneNumber" type="tel" class="form-control" />
+                    <span asp-validation-for="phoneNumber" class="field-validation-error"></span>
+                </div>
+            </div>
+            <div class="btn-group mt-4">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a asp-action="Details" asp-route-id="@Model.CustomerID" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
