@@ -3,97 +3,133 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EventEase_st10157545_POE</title>
-    <script type="importmap"></script>
-    <!-- <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> -->
+    <title>@ViewData["Title"] — EventEase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/EventEase_st10157545_POE.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <!--<header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EventEase_st10157545_POE</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+
+    <div class="app-shell">
+
+        <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a class="brand" asp-controller="Home" asp-action="Index">
+                    <span class="brand-icon">EE</span>
+                    <span class="brand-name">EventEase</span>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-label">Overview</span>
+                    <ul>
+                        <li>
+                            <a asp-controller="Home" asp-action="Index"
+                                   class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")">
+                                <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+                                Dashboard
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <li>
+                            <a asp-controller="Schedule" asp-action="Index"
+                                   class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Schedule" ? "active" : "")">
+                                <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>
+                                Schedule
+                            </a>
                         </li>
                     </ul>
                 </div>
-            </div>
-        </nav>
-        <nav class="sidebar navbar navbar-light bg-white border-end">
-            <div class="container-fluid">
 
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EventEase_st10157545_POE</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-
-                    <ul class="navbar-nav flex-column w-80"> 
-                        <li class="nav-item"> <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a> </li> 
-                        <li class="nav-item"> <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a> </li> 
-                        <li class="nav-item"> <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy1</a> </li> 
-                        <li class="nav-item"> <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy2</a> </li>
-                        <li class="nav-item"> <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy3</a> </li>
-                        <li class="nav-item"> <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy4</a> </li>
-                        <li class="nav-item"> <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy5</a> </li>
-                        <li class="nav-item"> <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy6</a> </li>
-                    </ul> 
+                <div class="nav-section">
+                    <span class="nav-label">Manage</span>
+                    <ul>
+                        <li>
+                            <a asp-controller="Bookings" asp-action="Index"
+                                   class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Bookings" ? "active" : "")">
+                                <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" /></svg>
+                                Bookings
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Venues" asp-action="Index"
+                                   class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Venues" ? "active" : "")">
+                                <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" /></svg>
+                                Venues
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Events" asp-action="Index"
+                                   class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Events" ? "active" : "")">
+                                <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" /></svg>
+                                Events
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Customers" asp-action="Index"
+                                   class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Customers" ? "active" : "")">
+                                <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg>
+                                Customers
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-             </div>
-        </nav>
+            </nav>
 
-    </header>-->
-   <!-- <div class="container">
-        <main role="main" class="pb-3">
-            the renderBody 
-        </main>
-    </div>
+            <div class="sidebar-footer">
+                <span class="footer-text">&copy; 2026 EventEase</span>
+            </div>
+        </aside>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - EventEase_st10157545_POE - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <!-- ── Main content area ───────────────────────────────────────────────── -->
+        <div class="main-area">
+
+            <!-- Top bar -->
+            <header class="topbar">
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
+                </button>
+                <div class="topbar-title">@ViewData["Title"]</div>
+                <div class="topbar-right">
+                    <span class="specialist-badge">Booking Specialist</span>
+                </div>
+            </header>
+
+            <!-- Flash messages -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                    @TempData["Success"]
+                </div>
+            }
+            @if (TempData["Warning"] != null)
+            {
+                <div class="alert alert-warning">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                    @TempData["Warning"]
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-error">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                    @TempData["Error"]
+                </div>
+            }
+
+            <!-- Page content -->
+            <main class="page-content">
+                @RenderBody()
+            </main>
+
+            <footer class="page-footer">
+                <p>&copy; 2026 EventEase Administration Platform</p>
+            </footer>
         </div>
-    </footer>
-
-     -->
-
-   <!-- <div class="main-content"> 
-        <div class="container"> 
-            <main role="main" class="pb-3"> 
-            </main> 
-         </div> 
-         <footer class="border-top footer text-muted"> 
-             <div class="container"> &copy; 2026 - EventEase_st10157545_POE - <a asp-controller="Home" asp-action="Privacy">Privacy</a> </div>
-         </footer> 
-    </div>-->
-    <!-- Sidebar -->
-    <div class="layout">
-        <aside class="sidebar"> 
-            <h2 class="logo"> <a asp-controller="Home" asp-action="Index">EventEase</a> </h2> 
-            <nav class="menu"> 
-                <ul> 
-                    <li><a asp-controller="Home" asp-action="Index">Home</a></li> 
-                    <li><a asp-controller="Home" asp-action="Privacy">Privacy</a></li> 
-                   
-                </ul> 
-                </nav> 
-         </aside> <!-- Main Content -->
-        <div class="content"> <main> @RenderBody() </main> <footer> <p> &copy; 2026 - EventEase - <a asp-controller="Home" asp-action="Privacy">Privacy</a> </p> </footer> </div>
     </div>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
