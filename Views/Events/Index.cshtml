@@ -1,5 +1,78 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model IEnumerable<EventEase_st10157545_POE.Models.EventViewModel>
 @{
+    ViewData["Title"] = "Events";
 }
+
+<div class="page-header">
+    <div>
+        <h1>Events</h1>
+        <p>Pre-load events before a venue is confirmed</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">+ Add Event</a>
+</div>
+
+<form method="get" class="search-bar">
+    <div class="form-group">
+        <label>Search</label>
+        <input name="search" value="@ViewData["Search"]" class="form-control" placeholder="Event name…" />
+    </div>
+    <div class="form-group">
+        <label>Status</label>
+        <select name="status" class="form-control">
+            <option value="">All</option>
+            <option value="Pending" selected="@(ViewData["Status"]?.ToString() == "Pending")">Pending (no venue)</option>
+            <option value="Confirmed" selected="@(ViewData["Status"]?.ToString() == "Confirmed")">Confirmed</option>
+            <option value="Cancelled" selected="@(ViewData["Status"]?.ToString() == "Cancelled")">Cancelled</option>
+        </select>
+    </div>
+    <div class="form-group" style="justify-content:flex-end">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a asp-action="Index" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
+
+<div class="card">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Event Name</th>
+                    <th>Preferred Date</th>
+                    <th>Expected Guests</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="text-muted" style="padding:24px;text-align:center">No events found.</td></tr>
+                }
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td>@e.EventID</td>
+                        <td>@e.EventName</td>
+                        <td>@(e.PreferredDate?.ToString("dd MMM yyyy") ?? "—")</td>
+                        <td>@(e.ExpectedGuests?.ToString() ?? "—")</td>
+                        <td><span class="badge badge-@e.Status.ToLower()">@e.Status</span></td>
+                        <td>
+                            <div class="btn-group">
+                                <a asp-action="Edit" asp-route-id="@e.EventID" class="btn btn-secondary btn-sm">Edit</a>
+                                @if (e.Status == "Pending")
+                                {
+                                    <a asp-controller="Bookings" asp-action="Create" class="btn btn-primary btn-sm">Book Now</a>
+                                }
+                                <a asp-action="Delete" asp-route-id="@e.EventID" class="btn btn-secondary btn-sm">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
