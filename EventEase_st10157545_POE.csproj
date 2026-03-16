@@ -4,11 +4,14 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>17e21f16-60f3-42bb-a70a-a7d6883064da</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.14" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
   </ItemGroup>
 
 </Project>

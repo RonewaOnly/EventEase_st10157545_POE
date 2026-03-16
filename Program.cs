@@ -1,3 +1,6 @@
+using EventEase_st10157545_POE.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace EventEase_st10157545_POE
 {
     public class Program
@@ -5,6 +8,11 @@ namespace EventEase_st10157545_POE
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Add DbContext
+            builder.Services.AddDbContext<EventEaseDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
