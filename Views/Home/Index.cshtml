@@ -1,8 +1,117 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model EventEase_st10157545_POE.Models.ViewModels.DashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="page-header">
+    <div>
+        <h1>Dashboard</h1>
+        <p>Overview of EventEase bookings and activity</p>
+    </div>
+    <a asp-controller="Bookings" asp-action="Create" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+        New Booking
+    </a>
+</div>
+
+<!-- Stat cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label">Total Bookings</div>
+        <div class="stat-value">@Model.TotalBookings</div>
+    </div>
+    <div class="stat-card amber">
+        <div class="stat-label">Pending</div>
+        <div class="stat-value">@Model.PendingBookings</div>
+    </div>
+    <div class="stat-card green">
+        <div class="stat-label">Confirmed</div>
+        <div class="stat-value">@Model.ConfirmedBookings</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Active Venues</div>
+        <div class="stat-value">@Model.TotalVenues</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Customers</div>
+        <div class="stat-value">@Model.TotalCustomers</div>
+    </div>
+    <div class="stat-card amber">
+        <div class="stat-label">Unbooked Events</div>
+        <div class="stat-value">@Model.PendingEvents</div>
+    </div>
+    <div class="stat-card green">
+        <div class="stat-label">Revenue This Month</div>
+        <div class="stat-value" style="font-size:20px">R @Model.RevenueThisMonth.ToString("N0")</div>
+    </div>
+</div>
+
+<div class="two-col">
+    <!-- Upcoming bookings -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Upcoming Bookings</h2>
+            <a asp-controller="Schedule" asp-action="Index" class="btn btn-secondary btn-sm">View Calendar</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Venue</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.UpcomingBookings.Any())
+                    {
+                        <tr><td colspan="4" class="text-muted" style="padding:20px">No upcoming bookings.</td></tr>
+                    }
+                    @foreach (var b in Model.UpcomingBookings)
+                    {
+                        <tr>
+                            <td>@b.EventDate.ToString("dd MMM")</td>
+                            <td>@b.Customer?.FullName</td>
+                            <td>@b.Venue?.VenueName</td>
+                            <td><span class="badge badge-@b.Status.ToLower()">@b.Status</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent bookings -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Recently Added</h2>
+            <a asp-controller="Bookings" asp-action="Index" class="btn btn-secondary btn-sm">All Bookings</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Venue</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.RecentBookings.Any())
+                    {
+                        <tr><td colspan="4" class="text-muted" style="padding:20px">No bookings yet.</td></tr>
+                    }
+                    @foreach (var b in Model.RecentBookings)
+                    {
+                        <tr>
+                            <td><a asp-controller="Bookings" asp-action="Details" asp-route-id="@b.BookingID">#@b.BookingID</a></td>
+                            <td>@b.Customer?.FullName</td>
+                            <td>@b.Venue?.VenueName</td>
+                            <td><span class="badge badge-@b.Status.ToLower()">@b.Status</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
