@@ -1,5 +1,112 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model EventEase_st10157545_POE.Models.ViewModels.BookingCreateViewModel
 @{
+    ViewData["Title"] = $"Edit Booking #{Model.Booking.BookingID}";
 }
+
+<div class="page-header">
+    <div>
+        <h1>Edit Booking #@Model.Booking.BookingID</h1>
+        <p>Modify booking details. Venue availability will be re-checked.</p>
+    </div>
+    <a asp-action="Details" asp-route-id="@Model.Booking.BookingID" class="btn btn-secondary">← Cancel Edit</a>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ConflictMessage))
+{
+    <div class="conflict-alert">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" style="flex-shrink:0;margin-top:2px"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+        <span>@Model.ConflictMessage</span>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Booking.BookingID" />
+            <input type="hidden" asp-for="Booking.BookingDate" />
+            <input type="hidden" id="excludeBookingId" value="@Model.Booking.BookingID" />
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label asp-for="Booking.CustomerID"></label>
+                    <select asp-for="Booking.CustomerID" asp-items="Model.Customers" class="form-control">
+                        <option value="">— Select customer —</option>
+                    </select>
+                    <span asp-validation-for="Booking.CustomerID" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Booking.EventID"></label>
+                    <select asp-for="Booking.EventID" asp-items="Model.Events" class="form-control">
+                        <option value="">— Select event —</option>
+                    </select>
+                    <span asp-validation-for="Booking.EventID" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Booking.VenueID"></label>
+                    <select asp-for="Booking.VenueID" asp-items="Model.Venues" class="form-control">
+                        <option value="">— Select venue —</option>
+                    </select>
+                    <span asp-validation-for="Booking.VenueID" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Booking.SpecialistID"></label>
+                    <select asp-for="Booking.SpecialistID" asp-items="Model.Specialists" class="form-control">
+                        <option value="">— Select specialist —</option>
+                    </select>
+                    <span asp-validation-for="Booking.SpecialistID" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Booking.EventDate"></label>
+                    <input asp-for="Booking.EventDate" type="date" class="form-control" id="Booking_EventDate" />
+                    <span asp-validation-for="Booking.EventDate" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Booking.GuestCount"></label>
+                    <input asp-for="Booking.GuestCount" type="number" min="1" class="form-control" />
+                    <span asp-validation-for="Booking.GuestCount" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Booking.StartTime"></label>
+                    <input asp-for="Booking.StartTime" type="time" class="form-control" id="Booking_StartTime" />
+                    <span asp-validation-for="Booking.StartTime" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Booking.EndTime"></label>
+                    <input asp-for="Booking.EndTime" type="time" class="form-control" id="Booking_EndTime" />
+                    <span asp-validation-for="Booking.EndTime" class="field-validation-error"></span>
+                    <div id="availability-status"></div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Booking.Status"></label>
+                    <select asp-for="Booking.Status" class="form-control">
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="form-group full">
+                    <label asp-for="Booking.Notes"></label>
+                    <textarea asp-for="Booking.Notes" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="btn-group mt-4">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a asp-action="Details" asp-route-id="@Model.Booking.BookingID" class="btn btn-secondary">Discard</a>
+            </div>
+        </form>
+    </div>
+</div>

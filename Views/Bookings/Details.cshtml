@@ -1,0 +1,97 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model EventEase_st10157545_POE.Models.Booking
+@{
+    ViewData["Title"] = $"Booking #{Model.BookingID}";
+}
+<div class="page-header">
+    <div>
+        <h1>Booking #@Model.BookingID</h1>
+        <p>Captured on @Model.BookingDate.ToString("dd MMM yyyy, HH:mm") by @Model.Specialist?.FullName</p>
+    </div>
+    <div class="btn-group">
+        @if (Model.Status != "Cancelled")
+        {
+            <a asp-action="Edit" asp-route-id="@Model.BookingID" class="btn btn-secondary">Edit</a>
+            <form asp-action="Cancel" asp-route-id="@Model.BookingID" method="post" style="display:inline"
+                  onsubmit="return confirm('Cancel this booking? The venue slot will be freed.')">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-warning">Cancel Booking</button>
+            </form>
+        }
+        <a asp-action="Delete" asp-route-id="@Model.BookingID" class="btn btn-danger">Delete</a>
+        <a asp-action="Index" class="btn btn-secondary">← Back</a>
+    </div>
+</div>
+
+<div class="two-col">
+    <!-- Booking summary -->
+    <div class="card">
+        <div class="card-header"><h2>Booking Details</h2></div>
+        <div class="card-body">
+            <table style="width:100%;font-size:14px">
+                <tr>
+                    <td class="text-muted" style="padding:6px 0;width:40%">Status</td>
+                    <td><span class="badge badge-@Model.Status.ToLower()">@Model.Status</span></td>
+                </tr>
+                <tr>
+                    <td class="text-muted" style="padding:6px 0">Event Date</td>
+                    <td>@Model.EventDate.ToString("dddd, dd MMMM yyyy")</td>
+                </tr>
+                <tr>
+                    <td class="text-muted" style="padding:6px 0">Time</td>
+                    <td>@Model.StartTime.ToString(@"hh\:mm") – @Model.EndTime.ToString(@"hh\:mm")</td>
+                </tr>
+                <tr>
+                    <td class="text-muted" style="padding:6px 0">Guests</td>
+                    <td>@Model.GuestCount</td>
+                </tr>
+                <tr>
+                    <td class="text-muted" style="padding:6px 0">Total Price</td>
+                    <td style="font-weight:600;color:var(--clr-primary)">R @Model.TotalPrice.ToString("N2")</td>
+                </tr>
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <tr>
+                        <td class="text-muted" style="padding:6px 0;vertical-align:top">Notes</td>
+                        <td>@Model.Notes</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+
+    <!-- Parties -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+            <div class="card-header"><h2>Customer</h2></div>
+            <div class="card-body" style="font-size:14px">
+                <div style="font-weight:600">@Model.Customer?.FullName</div>
+                <div class="text-muted">@Model.Customer?.Email</div>
+                <div class="text-muted">@Model.Customer?.phoneNumber</div>
+                <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.CustomerID"
+                   class="btn btn-secondary btn-sm mt-4">View Customer</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h2>Venue</h2></div>
+            <div class="card-body" style="font-size:14px">
+                <div style="font-weight:600">@Model.Venue?.VenueName</div>
+                <div class="text-muted">@Model.Venue?.Location</div>
+                <div class="text-muted">Capacity: @Model.Venue?.Capacity guests</div>
+                <a asp-controller="Venues" asp-action="Details" asp-route-id="@Model.VenueID"
+                   class="btn btn-secondary btn-sm mt-4">View Venue</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h2>Event Type</h2></div>
+            <div class="card-body" style="font-size:14px">
+                <div style="font-weight:600">@Model.Event?.EventName</div>
+                <div class="text-muted">@Model.Event?.Description</div>
+            </div>
+        </div>
+    </div>
+</div>
