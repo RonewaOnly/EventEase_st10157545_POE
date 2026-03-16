@@ -14,7 +14,7 @@ namespace EventEase_st10157545_POE.Models
 
         //Nullable - may be blocked for maintenance without a booking
         [Display(Name = "Booking (if applicable)")]
-        public int BookingID { get; set; }
+        public int? BookingID { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
