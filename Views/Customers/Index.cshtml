@@ -50,67 +50,7 @@
                         <td>@c.CustomerID</td>
                         <td style="font-weight:500">@c.FullName</td>
                         <td>@c.Email</td>
-                        <td>@c.<div class="page-header">
-    <div>
-        <h1>Customers</h1>
-        <p>Customers registered by booking specialists</p>
-    </div>
-    <a asp-action="Create" class="btn btn-primary">+ Add Customer</a>
-</div>
-
-<form method="get" class="search-bar">
-    <div class="form-group">
-        <label>Search</label>
-        <input name="search" value="@ViewData["Search"]" class="form-control" placeholder="Name, email or phone…" />
-    </div>
-    <div class="form-group" style="justify-content:flex-end">
-        <button type="submit" class="btn btn-primary">Search</button>
-        <a asp-action="Index" class="btn btn-secondary">Clear</a>
-    </div>
-</form>
-
-<div class="card">
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Registered</th>
-                    <th>Bookings</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (!Model.Any())
-                {
-                    <tr><td colspan="7" class="text-muted" style="padding:24px;text-align:center">No customers found.</td></tr>
-                }
-                @foreach (var ci in Model)
-                {
-                    <tr>
-                                                <td>@ci.CustomerID</td>
-                                                <td style="font-weight:500">@ci.FullName</td>
-                                                <td>@ci.Email</td>
-                                                <td>@ci.phoneNumber</td>
-                                                <td>@ci.CreateAt.ToString("dd MMM yyyy")</td>
-                        <td>@ci.Bookings.Count</td>
-                        <td>
-                            <div class="btn-group">
-                                <a asp-action="Details" asp-route-id="@ci.CustomerID" class="btn btn-secondary btn-sm">View</a>
-                                <a asp-action="Edit" asp-route-id="@ci.CustomerID" class="btn btn-secondary btn-sm">Edit</a>
-                                <a asp-controller="Bookings" asp-action="Create" class="btn btn-primary btn-sm">New Booking</a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-</td>
+                        <td>@c.phoneNumber</td>
                         <td>@c.CreateAt.ToString("dd MMM yyyy")</td>
                         <td>@c.Bookings.Count</td>
                         <td>
@@ -126,3 +66,4 @@
         </table>
     </div>
 </div>
+
