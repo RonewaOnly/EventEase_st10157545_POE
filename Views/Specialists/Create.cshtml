@@ -1,0 +1,95 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model EventEase_st10157545_POE.Models.BookingSpecialistViewModelcs
+@{
+    ViewData["Title"] = "Add Specialist";
+}
+
+<div class="page-header">
+    <div>
+        <h1>Add Specialist</h1>
+        <p>Create a new booking specialist account</p>
+    </div>
+    <a asp-action="Index" class="btn btn-secondary">← Back to Team</a>
+</div>
+
+<div class="card" style="max-width:580px">
+    <div class="card-body">
+
+        @* Show any model-level errors (e.g. duplicate email, short password) *@
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="conflict-alert" style="margin-bottom:16px">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"
+                     style="flex-shrink:0;margin-top:2px">
+                    <path fill-rule="evenodd"
+                          d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213
+                             2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11
+                             13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002
+                             0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            </div>
+        }
+
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label asp-for="FirstName"></label>
+                    <input asp-for="FirstName" class="form-control" autofocus
+                           placeholder="e.g. Thabo" />
+                    <span asp-validation-for="FirstName" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="LastName"></label>
+                    <input asp-for="LastName" class="form-control"
+                           placeholder="e.g. Nkosi" />
+                    <span asp-validation-for="LastName" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group full">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" type="email" class="form-control"
+                           placeholder="e.g. thabo@eventease.co.za" />
+                    <span asp-validation-for="Email" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group full">
+                    <label asp-for="Role"></label>
+                    <select asp-for="Role" class="form-control">
+                        <option value="Specialist">Specialist — manages bookings, venues, events &amp; customers</option>
+                        <option value="Admin">Admin — full access including team management</option>
+                    </select>
+                    <span asp-validation-for="Role" class="field-validation-error"></span>
+                </div>
+
+                @* Password is passed as a separate string parameter, not bound to the model,
+                   so we use name="password" (lowercase) to match the action parameter name *@
+                <div class="form-group full">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password"
+                           class="form-control" placeholder="Minimum 6 characters"
+                           autocomplete="new-password" />
+                    <small class="text-muted">Must be at least 6 characters.</small>
+                </div>
+
+            </div>
+
+            <div class="btn-group mt-4">
+                <button type="submit" class="btn btn-primary">Create Specialist</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+

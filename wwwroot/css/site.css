@@ -12,7 +12,7 @@
     --clr-primary: #1d9e75;
     --clr-primary-dk: #0f6e56;
     --clr-primary-lt: #e1f5ee;
-    /* --clr-amber:      #ba7517; */
+    --clr-amber: #ba7517;
     --clr-amber-lt: #faeeda;
     --clr-danger: #a32d2d;
     --clr-danger-lt: #fcebeb;
@@ -745,4 +745,104 @@ label {
     .sidebar-toggle {
         display: none;
     }
+}
+
+/* ── Sidebar user block ───────────────────────────────────────────────────── */
+.sidebar-user {
+    padding: 12px 14px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex: 1;
+    min-width: 0;
+    padding: 4px;
+    border-radius: 8px;
+    transition: background 0.15s;
+}
+
+    .sidebar-user-info:hover {
+        background: rgba(255,255,255,0.07);
+    }
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: var(--sidebar-accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.user-details {
+    min-width: 0;
+}
+
+.user-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-role {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+}
+
+.sidebar-logout {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255,255,255,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+    .sidebar-logout:hover {
+        background: rgba(255,255,255,0.08);
+        color: #fff;
+    }
+
+/* ── Topbar role badge updates */
+.specialist-badge {
+    font-size: 12px;
+    background: var(--clr-primary-lt);
+    color: var(--clr-primary-dk);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+    .specialist-badge.badge-admin {
+        background: #111110;
+        color: #c2c0b6;
+    }
+
+.role-tag {
+    font-size: 10px;
+    opacity: 0.65;
+    font-weight: 400;
 }
