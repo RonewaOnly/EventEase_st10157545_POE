@@ -1,5 +1,75 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model IEnumerable<EventEase_st10157545_POE.Models.VenueAvaliabilityViewModel>
 @{
+    ViewData["Title"] = "Venue Availability";
+    var venue = ViewData["Venue"] as EventEase_st10157545_POE.Models.VenueViewModel;
+    var date  = (DateTime)ViewData["Date"]!;
 }
+
+<div class="page-header">
+    <div>
+        <h1>@venue?.VenueName — Availability</h1>
+        <p>@date.ToString("dddd, dd MMMM yyyy")</p>
+    </div>
+    <div class="btn-group">
+        <a asp-action="Availability" asp-route-id="@venue?.VenueID"
+           asp-route-date="@date.AddDays(-1).ToString("yyyy-MM-dd")" class="btn btn-secondary btn-sm">← Prev Day</a>
+        <a asp-action="Availability" asp-route-id="@venue?.VenueID"
+           asp-route-date="@date.AddDays(1).ToString("yyyy-MM-dd")" class="btn btn-secondary btn-sm">Next Day →</a>
+        <a asp-action="Details" asp-route-id="@venue?.VenueID" class="btn btn-secondary">← Venue</a>
+    </div>
+</div>
+
+<!-- Date picker -->
+<form method="get" style="display:flex;gap:10px;align-items:center;margin-bottom:20px">
+    <input type="date" name="date" value="@date.ToString("yyyy-MM-dd")" class="form-control" style="width:180px" />
+    <input type="hidden" name="id" value="@venue?.VenueID" />
+    <button type="submit" class="btn btn-secondary">Go to Date</button>
+</form>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Schedule for @date.ToString("dd MMM yyyy")</h2>
+        <a asp-controller="Bookings" asp-action="Create" class="btn btn-primary btn-sm">+ New Booking</a>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="card-body">
+            <p class="text-muted">No bookings or blocks for this date. The venue is fully available.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Start</th><th>End</th><th>Status</th><th>Customer</th><th>Event</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model.OrderBy(s => s.StartTime))
+                    {
+                        <tr>
+                            <td>@s.StartTime?.ToString(@"hh\:mm")</td>
+                            <td>@s.EndTime?.ToString(@"hh\:mm")</td>
+                            <td><span class="badge @(s.Status == "Reserved" ? "badge-confirmed" : s.isBlocked ? "badge-cancelled" : "badge-pending")
+                            <td>@(s.Booking?.Customer?.FullName ?? "—")</td>
+                            <td>
+                                @if (s.BookingID.HasValue)
+                                {
+                                    <a asp-controller="Bookings" asp-action="Details" asp-route-id="@s.BookingID">
+                                        @(s.Booking?.Event?.EventName ?? $"Booking #{s.BookingID}")
+                                    </a>
+                                }
+                                else { <span class="text-muted">@(s.BlockReason ?? "Blocked")</span> }
+                            </td>
+                            <td class="text-muted">@s.BlockReason</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+

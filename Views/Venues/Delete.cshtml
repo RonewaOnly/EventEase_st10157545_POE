@@ -1,5 +1,32 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model EventEase_st10157545_POE.Models.VenueViewModel
 @{
+    ViewData["Title"] = "Deactivate Venue";
 }
+
+<div class="page-header">
+    <h1>Deactivate Venue</h1>
+</div>
+
+<div class="card" style="max-width:500px">
+    <div class="card-body">
+        <p style="margin-bottom:16px">
+            This will mark the venue as <strong>inactive</strong>. It will no longer appear in the venue selection list for new bookings.
+            Existing bookings will not be affected.
+        </p>
+        <table style="width:100%;font-size:14px;margin-bottom:20px">
+            <tr><td class="text-muted" style="padding:5px 0;width:40%">Venue</td><td>@Model.VenueName</td></tr>
+            <tr><td class="text-muted" style="padding:5px 0">Location</td><td>@Model.Location</td></tr>
+            <tr><td class="text-muted" style="padding:5px 0">Capacity</td><td>@Model.Capacity guests</td></tr>
+        </table>
+        <form asp-action="Delete" method="post">
+            @Html.AntiForgeryToken()
+            <div class="btn-group">
+                <button type="submit" class="btn btn-warning">Deactivate Venue</button>
+                <a asp-action="Details" asp-route-id="@Model.VenueID" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

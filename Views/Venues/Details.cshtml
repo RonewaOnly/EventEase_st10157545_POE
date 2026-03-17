@@ -1,5 +1,78 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model EventEase_st10157545_POE.Models.VenueViewModel
 @{
+    ViewData["Title"] = Model.VenueName;
 }
+
+<div class="page-header">
+    <div>
+        <h1>@Model.VenueName</h1>
+        <p>@Model.Location</p>
+    </div>
+    <div class="btn-group">
+        <a asp-action="Edit" asp-route-id="@Model.VenueID" class="btn btn-secondary">Edit</a>
+        <a asp-action="Availability" asp-route-id="@Model.VenueID" class="btn btn-secondary">Check Availability</a>
+        <a asp-action="Index" class="btn btn-secondary">← Back</a>
+    </div>
+</div>
+
+<div class="two-col">
+    <div>
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="@Model.VenueName" style="width:100%;border-radius:10px;margin-bottom:16px;object-fit:cover;height:220px" />
+        }
+        <div class="card">
+            <div class="card-header"><h2>Venue Info</h2></div>
+            <div class="card-body">
+                <table style="width:100%;font-size:14px">
+                    <tr><td class="text-muted" style="padding:6px 0;width:40%">Capacity</td><td>@Model.Capacity guests</td></tr>
+                    <tr>
+                        <td class="text-muted" style="padding:6px 0">Price Per Day</td>
+                        <td style="font-weight:600;color:var(--clr-primary)">R @Model.PricePerDay?.ToString("N2")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted" style="padding:6px 0">Status</td>
+                        <td><span class="badge @(Model.IsActive ? "badge-confirmed" : "badge-cancelled")">@(Model.IsActive ? "Active" : "Inactive")</span></td>
+                    </tr>
+                </table>
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p style="margin-top:12px;font-size:14px;color:var(--clr-text-muted)">@Model.Description</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>Recent Bookings</h2>
+            <a asp-controller="Bookings" asp-action="Create" class="btn btn-primary btn-sm">+ Book This Venue</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>#</th><th>Customer</th><th>Event</th><th>Date</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Bookings.Any())
+                    {
+                        <tr><td colspan="5" class="text-muted" style="padding:20px">No bookings for this venue yet.</td></tr>
+                    }
+                    @foreach (var b in Model.Bookings.OrderByDescending(b => b.EventDate).Take(10))
+                    {
+                        <tr>
+                            <td><a asp-controller="Bookings" asp-action="Details" asp-route-id="@b.BookingID">#@b.BookingID</a></td>
+                            <td>@b.Customer?.FullName</td>
+                            <td>@b.Event?.EventName</td>
+                            <td>@b.EventDate.ToString("dd MMM yyyy")</td>
+                            <td><span class="badge badge-@b.Status.ToLower()">@b.Status</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

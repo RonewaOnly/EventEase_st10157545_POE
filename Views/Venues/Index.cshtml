@@ -1,5 +1,59 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model IEnumerable<EventEase_st10157545_POE.Models.VenueViewModel>
 @{
+    ViewData["Title"] = "Venues";
+}
+
+<div class="page-header">
+    <div>
+        <h1>Venues</h1>
+        <p>Manage all available event venues</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">+ Add Venue</a>
+</div>
+
+<form method="get" class="search-bar">
+    <div class="form-group">
+        <label>Search</label>
+        <input name="search" value="@ViewData["Search"]" class="form-control" placeholder="Name or location…" />
+    </div>
+    <div class="form-group" style="justify-content:flex-end">
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a asp-action="Index" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No venues found. <a asp-action="Create">Add your first venue.</a></p>
+}
+else
+{
+    <div class="venue-grid">
+        @foreach (var v in Model)
+        {
+            <div class="venue-card">
+                @if (!string.IsNullOrEmpty(v.ImageUrl))
+                {
+                    <img src="@v.ImageUrl" alt="@v.VenueName" class="venue-card-img" />
+                }
+                else
+                {
+                    <div class="venue-card-img">No image</div>
+                }
+                <div class="venue-card-body">
+                    <div class="venue-card-title">@v.VenueName</div>
+                    <div class="venue-card-meta">@v.Location &middot; @v.Capacity guests max</div>
+                    <div class="venue-card-price">R @v.PricePerDay?.ToString("N2") / day</div>
+                    <div class="btn-group mt-4">
+                        <a asp-action="Details" asp-route-id="@v.VenueID" class="btn btn-secondary btn-sm">Details</a>
+                        <a asp-action="Edit" asp-route-id="@v.VenueID" class="btn btn-secondary btn-sm">Edit</a>
+                        <a asp-action="Availability" asp-route-id="@v.VenueID" class="btn btn-secondary btn-sm">Availability</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }
