@@ -1,0 +1,76 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model EventEase_st10157545_POE.Models.BookingSpecialistViewModelcs
+@{
+    ViewData["Title"] = "My Profile";
+    var pwVm = ViewData["ChangePasswordVm"] as EventEase_st10157545_POE.Models.ViewModels.ChangePasswordViewModel
+               ?? new EventEase_st10157545_POE.Models.ViewModels.ChangePasswordViewModel();
+}
+
+<div class="page-header">
+    <div>
+        <h1>My Profile</h1>
+        <p>Your account details and security settings</p>
+    </div>
+</div>
+
+<div class="two-col">
+    <!-- Account info -->
+    <div class="card">
+        <div class="card-header"><h2>Account Details</h2></div>
+        <div class="card-body">
+            <table style="width:100%;font-size:14px">
+                <tr>
+                    <td class="text-muted" style="padding:7px 0;width:40%">Full Name</td>
+                    <td style="font-weight:500">@Model.FullName</td>
+                </tr>
+                <tr>
+                    <td class="text-muted" style="padding:7px 0">Email</td>
+                    <td>@Model.Email</td>
+                </tr>
+                <tr>
+                    <td class="text-muted" style="padding:7px 0">Role</td>
+                    <td>
+                        <span class="badge @(Model.Role == "Admin" ? "badge-confirmed" : "badge-pending")">
+                            @Model.Role
+                        </span>
+                    </td>
+                </tr>
+            </table>
+
+            @if (Model.Role == "Admin")
+            {
+                <div style="margin-top:16px;padding:10px 14px;background:var(--clr-primary-lt);border-radius:8px;font-size:13px;color:var(--clr-primary-dk)">
+                    You have full admin access including team management.
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Change password -->
+    <div class="card">
+        <div class="card-header"><h2>Change Password</h2></div>
+        <div class="card-body">
+            <form asp-action="ChangePassword" method="post">
+                @Html.AntiForgeryToken()
+                <div class="form-group" style="margin-bottom:14px">
+                    <label asp-for="@pwVm.CurrentPassword"></label>
+                    <input asp-for="@pwVm.CurrentPassword" type="password" class="form-control" />
+                    <span asp-validation-for="@pwVm.CurrentPassword" class="field-validation-error"></span>
+                </div>
+                <div class="form-group" style="margin-bottom:14px">
+                    <label asp-for="@pwVm.NewPassword"></label>
+                    <input asp-for="@pwVm.NewPassword" type="password" class="form-control" />
+                    <span asp-validation-for="@pwVm.NewPassword" class="field-validation-error"></span>
+                </div>
+                <div class="form-group" style="margin-bottom:20px">
+                    <label asp-for="@pwVm.ConfirmNewPassword"></label>
+                    <input asp-for="@pwVm.ConfirmNewPassword" type="password" class="form-control" />
+                    <span asp-validation-for="@pwVm.ConfirmNewPassword" class="field-validation-error"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Password</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model EventEase_st10157545_POE.Models.BookingSpecialistViewModelcs
+@{
+    ViewData["Title"] = "Edit Team Member";
+}
+
+<div class="page-header">
+    <div>
+        <h1>Edit Team Member</h1>
+        <p>Update details for @Model.FullName</p>
+    </div>
+    <a asp-action="Index" class="btn btn-secondary">← Back to Team</a>
+</div>
+
+<div class="card" style="max-width:580px">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="SpecialistID" />
+            <input type="hidden" asp-for="Password" />
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label asp-for="FirstName"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="LastName"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group full">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" type="email" class="form-control" />
+                    <span asp-validation-for="Email" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group full">
+                    <label asp-for="Role"></label>
+                    @if (Model.SpecialistID == 1)
+                    {
+                        <input type="text" value="Admin" class="form-control" disabled />
+                        <input type="hidden" asp-for="Role" />
+                        <small class="text-muted">The primary admin role cannot be changed.</small>
+                    }
+                    else
+                    {
+                        <select asp-for="Role" class="form-control">
+                            <option value="Specialist">Specialist</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    }
+                </div>
+            </div>
+
+            <!-- Password reset section -->
+            <div style="margin:20px 0;padding:16px;background:var(--clr-bg);border-radius:8px">
+                <div style="font-size:13px;font-weight:600;margin-bottom:12px">Reset Password (optional)</div>
+                <p class="text-muted" style="margin-bottom:12px">Leave blank to keep the current password.</p>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" name="newPassword" id="newPassword" class="form-control"
+                           placeholder="Min. 8 characters" />
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+

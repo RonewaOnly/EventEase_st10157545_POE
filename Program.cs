@@ -16,7 +16,18 @@ namespace EventEase_st10157545_POE
             //Registering Services
             builder.Services.AddScoped<BookingConflictService>();
             builder.Services.AddScoped<AuditService>();
+            builder.Services.AddScoped<AuthService>();
+            builder.Services.AddHttpContextAccessor();
 
+
+            // Session (used to hold the logged-in specialist's ID
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options => { 
+                options.IdleTimeout = TimeSpan.FromSeconds(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            
+            });
 
 
             // Add services to the container.
@@ -37,11 +48,11 @@ namespace EventEase_st10157545_POE
 
             app.UseAuthorization();
 
-
+            app.UseSession();//enable session middleware
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
+                pattern: "{controller=Account}/{action=Login}/{id?}")
                 .WithStaticAssets();
 
             app.Run();
