@@ -23,7 +23,7 @@ namespace EventEase_st10157545_POE
             // Session (used to hold the logged-in specialist's ID
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options => { 
-                options.IdleTimeout = TimeSpan.FromSeconds(1);
+                options.IdleTimeout = TimeSpan.FromMinutes(1);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             
@@ -46,9 +46,11 @@ namespace EventEase_st10157545_POE
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            app.UseAuthorization();
 
             app.UseSession();//enable session middleware
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
