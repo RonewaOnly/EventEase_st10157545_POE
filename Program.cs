@@ -1,6 +1,6 @@
 using EventEase_st10157545_POE.Data;
 using Microsoft.EntityFrameworkCore;
-
+using EventEase_st10157545_POE.Services;
 namespace EventEase_st10157545_POE
 {
     public class Program
@@ -12,6 +12,10 @@ namespace EventEase_st10157545_POE
             // Add DbContext
             builder.Services.AddDbContext<EventEaseDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            //Registering Services
+            builder.Services.AddScoped<BookingConflictService>();
+            builder.Services.AddScoped<AuditService>();
 
 
 
