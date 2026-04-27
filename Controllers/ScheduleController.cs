@@ -7,10 +7,7 @@ namespace EventEase_st10157545_POE.Controllers
     public class ScheduleController : Controller
     {
         private readonly EventEaseDbContext _context;
-        public ScheduleController(EventEaseDbContext context) 
-        {
-            _context = context;
-        }
+        public ScheduleController(EventEaseDbContext context) => _context = context;
         // GET: Schedule  — monthly calendar view
         public async Task<IActionResult> Index(int? year, int? month, int? venueId)
         {
