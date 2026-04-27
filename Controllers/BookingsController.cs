@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventEase.Controllers
+namespace EventEase_st10157545_POE.Controllers
 {
     public class BookingsController : Controller
     {
