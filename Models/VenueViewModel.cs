@@ -36,6 +36,10 @@ namespace EventEase_st10157545_POE.Models
         [Display(Name = "Active")]
         public bool IsActive { get; set; } = true;
 
+        [NotMapped]
+        [Display(Name = "Upload New Image")]
+        public IFormFile? ImageFile { get; set; }
+
         //Referenced Table
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
