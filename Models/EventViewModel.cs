@@ -30,6 +30,15 @@ namespace EventEase_st10157545_POE.Models
         public string Status { get; set; } = "Pending";
 
 
+        [StringLength(500)]
+        [Display(Name = "Image URL")]
+        public string? ImageURL { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Upload Event Image")]
+        public IFormFile? ImageFile { get; set; }
+
+
         //Referenced Table
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
