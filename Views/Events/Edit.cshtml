@@ -6,15 +6,14 @@
     ViewData["Title"] = "Edit Event";
 }
 
-
 <div class="page-header">
     <h1>Edit Event</h1>
     <a asp-action="Index" class="btn btn-secondary">← Back</a>
 </div>
 
-<div class="card" style="max-width:600px">
+<div class="card" style="max-width:660px">
     <div class="card-body">
-        <form asp-action="Edit" method="post">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="EventID" />
             <div class="form-grid">
@@ -45,6 +44,28 @@
                     <label asp-for="Description"></label>
                     <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 </div>
+
+                @if (!string.IsNullOrEmpty(Model.ImageURL))
+                {
+                    <div class="form-group full">
+                        <label>Current Image</label>
+                        <div style="margin-top:6px">
+                            <img src="@Model.ImageURL" alt="Current event image" class="img-preview" />
+                        </div>
+                    </div>
+                }
+                <input type="hidden" asp-for="ImageURL" />
+
+                <div class="form-group full">
+                    <label asp-for="ImageFile"></label>
+                    <input asp-for="ImageFile" type="file" accept="image/jpeg,image/png,image/gif,image/webp"
+                           class="form-control" onchange="previewImage(this,'eventPreview')" />
+                    <small class="text-muted">Upload to replace current image. Leave blank to keep existing.</small>
+                    <span asp-validation-for="ImageFile" class="field-validation-error"></span>
+                    <div id="eventPreview" class="img-preview-wrap" style="display:none;margin-top:10px">
+                        <img id="eventPreviewImg" src="" alt="New image preview" class="img-preview" />
+                    </div>
+                </div>
             </div>
             <div class="btn-group mt-4">
                 <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -52,3 +73,18 @@
             </div>
         </form>
     </div>
+</div>
+
+@section Scripts {
+    <script>
+        function previewImage(input, previewId) {
+            const wrap = document.getElementById(previewId);
+            const img  = document.getElementById(previewId + 'Img');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => { img.src = e.target.result; wrap.style.display = 'block'; };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

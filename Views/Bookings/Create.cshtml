@@ -2,8 +2,9 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @model EventEase_st10157545_POE.Models.ViewModels.BookingCreateViewModel
-@{ ViewData["Title"] = "New Booking"; }
-
+@{
+    ViewData["Title"] = "New Booking";
+}
 
 <div class="page-header">
     <div>
@@ -11,8 +12,8 @@
         <p>Capture a booking on behalf of a customer</p>
     </div>
     <a asp-action="Index" class="btn btn-secondary">← Back to Bookings</a>
-
 </div>
+
 @if (!string.IsNullOrEmpty(Model.ConflictMessage))
 {
     <div class="conflict-alert">

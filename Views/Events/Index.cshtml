@@ -14,19 +14,28 @@
     <a asp-action="Create" class="btn btn-primary">+ Add Event</a>
 </div>
 
+<!-- Enhanced search bar with date range -->
 <form method="get" class="search-bar">
     <div class="form-group">
         <label>Search</label>
-        <input name="search" value="@ViewData["Search"]" class="form-control" placeholder="Event name…" />
+        <input name="search" value="@ViewData["Search"]" class="form-control" placeholder="Event name or description…" />
     </div>
     <div class="form-group">
         <label>Status</label>
         <select name="status" class="form-control">
-            <option value="">All</option>
+            <option value="">All statuses</option>
             <option value="Pending" selected="@(ViewData["Status"]?.ToString() == "Pending")">Pending (no venue)</option>
             <option value="Confirmed" selected="@(ViewData["Status"]?.ToString() == "Confirmed")">Confirmed</option>
             <option value="Cancelled" selected="@(ViewData["Status"]?.ToString() == "Cancelled")">Cancelled</option>
         </select>
+    </div>
+    <div class="form-group">
+        <label>From date</label>
+        <input name="fromDate" type="date" value="@(((DateTime?)ViewData["FromDate"])?.ToString("yyyy-MM-dd"))" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>To date</label>
+        <input name="toDate" type="date" value="@(((DateTime?)ViewData["ToDate"])?.ToString("yyyy-MM-dd"))" class="form-control" />
     </div>
     <div class="form-group" style="justify-content:flex-end">
         <button type="submit" class="btn btn-primary">Filter</button>
@@ -39,6 +48,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>Image</th>
                     <th>#</th>
                     <th>Event Name</th>
                     <th>Preferred Date</th>
@@ -50,15 +60,30 @@
             <tbody>
                 @if (!Model.Any())
                 {
-                    <tr><td colspan="6" class="text-muted" style="padding:24px;text-align:center">No events found.</td></tr>
+                    <tr><td colspan="7" class="text-muted" style="padding:24px;text-align:center">No events found.</td></tr>
                 }
                 @foreach (var e in Model)
                 {
                     <tr>
+                        <td style="width:56px">
+                            @if (!string.IsNullOrEmpty(e.ImageURL))
+                            {
+                                <img src="@e.ImageURL" alt="@e.EventName"
+                                     style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--clr-border)" />
+                            }
+                            else
+                            {
+                                <div style="width:48px;height:48px;border-radius:6px;border:1px solid var(--clr-border);background:var(--clr-bg);display:flex;align-items:center;justify-content:center">
+                                    <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" style="opacity:0.3">
+                                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            }
+                        </td>
                         <td>@e.EventID</td>
                         <td>@e.EventName</td>
                         <td>@(e.PreferredDate?.ToString("dd MMM yyyy") ?? "—")</td>
-                        <td>@(e.ExpectedGuests?.ToString() ?? "—")</td>
+                        <td>@(e.ExpectedGuests?.ToString("N0") ?? "—")</td>
                         <td><span class="badge badge-@e.Status.ToLower()">@e.Status</span></td>
                         <td>
                             <div class="btn-group">
@@ -67,7 +92,7 @@
                                 {
                                     <a asp-controller="Bookings" asp-action="Create" class="btn btn-primary btn-sm">Book Now</a>
                                 }
-                                <a asp-action="Delete" asp-route-id="@e.EventID" class="btn btn-secondary btn-sm">Delete</a>
+                                <a asp-action="Delete" asp-route-id="@e.EventID" class="btn btn-danger btn-sm">Delete</a>
                             </div>
                         </td>
                     </tr>

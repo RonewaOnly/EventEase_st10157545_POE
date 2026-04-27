@@ -5,6 +5,8 @@
 @{
     ViewData["Title"] = $"Booking #{Model.BookingID}";
 }
+
+
 <div class="page-header">
     <div>
         <h1>Booking #@Model.BookingID</h1>
@@ -24,6 +26,7 @@
         <a asp-action="Index" class="btn btn-secondary">← Back</a>
     </div>
 </div>
+
 
 <div class="two-col">
     <!-- Booking summary -->
@@ -62,6 +65,7 @@
         </div>
     </div>
 
+
     <!-- Parties -->
     <div style="display:flex;flex-direction:column;gap:16px">
         <div class="card">
@@ -75,6 +79,7 @@
             </div>
         </div>
 
+
         <div class="card">
             <div class="card-header"><h2>Venue</h2></div>
             <div class="card-body" style="font-size:14px">
@@ -86,6 +91,7 @@
             </div>
         </div>
 
+
         <div class="card">
             <div class="card-header"><h2>Event Type</h2></div>
             <div class="card-body" style="font-size:14px">
@@ -95,3 +101,4 @@
         </div>
     </div>
 </div>
+

@@ -9,6 +9,7 @@
     var venues = ViewData["Venues"] as IEnumerable<EventEase_st10157545_POE.Models.VenueViewModel> ?? new List<EventEase_st10157545_POE.Models.VenueViewModel>();
 }
 
+
 <div class="page-header">
     <div>
         <h1>@date.ToString("dddd, dd MMMM yyyy")</h1>
@@ -22,6 +23,7 @@
         <a asp-action="Index" class="btn btn-secondary">Month View</a>
     </div>
 </div>
+
 
 <form method="get" class="search-bar">
     <div class="form-group">
@@ -42,6 +44,7 @@
         <button type="submit" class="btn btn-primary">Go</button>
     </div>
 </form>
+
 
 <div class="card">
     <div class="card-header">
@@ -81,3 +84,4 @@
         </div>
     }
 </div>
+

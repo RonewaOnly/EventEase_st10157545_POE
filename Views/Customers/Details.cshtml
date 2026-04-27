@@ -6,6 +6,7 @@
     ViewData["Title"] = Model.FullName;
 }
 
+
 <div class="page-header">
     <div>
         <h1>@Model.FullName</h1>
@@ -18,17 +19,19 @@
     </div>
 </div>
 
+
 <div class="two-col">
     <div class="card" style="align-self:start">
         <div class="card-header"><h2>Contact Info</h2></div>
         <div class="card-body">
             <table style="width:100%;font-size:14px">
                 <tr><td class="text-muted" style="padding:6px 0;width:35%">Email</td><td>@Model.Email</td></tr>
-                <tr><td class="text-muted" style="padding:6px 0">Phone</td><td>@Model.phoneNumber/td></tr>
+                <tr><td class="text-muted" style="padding:6px 0">Phone</td><td>@Model.phoneNumber</td></tr>
                 <tr><td class="text-muted" style="padding:6px 0">Bookings</td><td>@Model.Bookings.Count total</td></tr>
             </table>
         </div>
     </div>
+
 
     <div class="card">
         <div class="card-header"><h2>Booking History</h2></div>
@@ -57,3 +60,4 @@
         </div>
     </div>
 </div>
+

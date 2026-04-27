@@ -2,9 +2,7 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @model EventEase_st10157545_POE.Models.VenueViewModel
-@{
-    ViewData["Title"] = Model.VenueName;
-}
+@{ ViewData["Title"] = Model.VenueName; }
 
 <div class="page-header">
     <div>
@@ -20,23 +18,19 @@
 
 <div class="two-col">
     <div>
-        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        @if (!string.IsNullOrEmpty(Model.ImageURL))
         {
-            <img src="@Model.ImageUrl" alt="@Model.VenueName" style="width:100%;border-radius:10px;margin-bottom:16px;object-fit:cover;height:220px" />
+            <img src="@Model.ImageURL" alt="@Model.VenueName" style="width:100%;border-radius:10px;margin-bottom:16px;object-fit:cover;height:220px" />
         }
         <div class="card">
             <div class="card-header"><h2>Venue Info</h2></div>
             <div class="card-body">
                 <table style="width:100%;font-size:14px">
                     <tr><td class="text-muted" style="padding:6px 0;width:40%">Capacity</td><td>@Model.Capacity guests</td></tr>
-                    <tr>
-                        <td class="text-muted" style="padding:6px 0">Price Per Day</td>
-                        <td style="font-weight:600;color:var(--clr-primary)">R @Model.PricePerDay?.ToString("N2")</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted" style="padding:6px 0">Status</td>
-                        <td><span class="badge @(Model.IsActive ? "badge-confirmed" : "badge-cancelled")">@(Model.IsActive ? "Active" : "Inactive")</span></td>
-                    </tr>
+                    <tr><td class="text-muted" style="padding:6px 0">Price Per Day</td>
+                        <td style="font-weight:600;color:var(--clr-primary)">R @Model.PricePerDay.Value.ToString("N2")</td></tr>
+                    <tr><td class="text-muted" style="padding:6px 0">Status</td>
+                        <td><span class="badge @(Model.IsActive ? "badge-confirmed" : "badge-cancelled")">@(Model.IsActive ? "Active" : "Inactive")</span></td></tr>
                 </table>
                 @if (!string.IsNullOrEmpty(Model.Description))
                 {

@@ -6,6 +6,7 @@
     ViewData["Title"] = "Bookings";
 }
 
+
 <div class="page-header">
     <div>
         <h1>Bookings</h1>
@@ -13,95 +14,150 @@
     </div>
     <a asp-action="Create" class="btn btn-primary">
         <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule
-                  New Booking
-            </a>
-        </div>
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        New Booking
+    </a>
+</div>
 
-        <!-- Search / filter bar -->
-        <form method="get" class="search-bar">
-            <div class="form-group">
-                <label>Search</label>
-                <input name="SearchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Customer, venue or event…" />
-            </div>
-            <div class="form-group">
-                <label>Status</label>
-                <select name="StatusFilter" class="form-control">
-                    <option value="">All statuses</option>
-                    <option value="Confirmed" selected="@(Model.StatusFilter == "Confirmed")">Confirmed</option>
-                    <option value="Pending" selected="@(Model.StatusFilter == "Pending")">Pending</option>
-                    <option value="Cancelled" selected="@(Model.StatusFilter == "Cancelled")">Cancelled</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Venue</label>
-                <select name="VenueFilter" class="form-control" asp-items="Model.Venues">
-                    <option value="">All venues</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>From</label>
-                <input type="date" name="FromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label>To</label>
-                <input type="date" name="ToDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" class="form-control" />
-            </div>
-            <div class="form-group" style="justify-content:flex-end">
-                <button type="submit" class="btn btn-primary">Filter</button>
-                <a asp-action="Index" class="btn btn-secondary">Clear</a>
-            </div>
-        </form>
 
-        <div class="card">
-            <div class="card-header">
-                <h2>@Model.Bookings.Count booking(s) found</h2>
-            </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Customer</th>
-                            <th>Event</th>
-                            <th>Venue</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Guests</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (!Model.Bookings.Any())
-                        {
-                            <tr><td colspan="10" class="text-muted" style="padding:24px;text-align:center">No bookings match your search.</td></tr>
-                        }
-                        @foreach (var b in Model.Bookings)
-                        {
-                            <tr>
-                                <td><a asp-action="Details" asp-route-id="@b.BookingID">#@b.BookingID</a></td>
-                                <td>@b.Customer?.FullName</td>
-                                <td>@b.Event?.EventName</td>
-                                <td>@b.Venue?.VenueName</td>
-                                <td>@b.EventDate.ToString("dd MMM yyyy")</td>
-                                <td>@b.StartTime.ToString(@"hh\:mm") – @b.EndTime.ToString(@"hh\:mm")</td>
-                                <td>@b.GuestCount</td>
-                                <td>R @b.TotalPrice.ToString("N2")</td>
-                                <td><span class="badge badge-@b.Status.ToLower()">@b.Status</span></td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a asp-action="Details" asp-route-id="@b.BookingID" class="btn btn-secondary btn-sm">View</a>
-                                        @if (b.Status != "Cancelled")
-                                        {
-                                            <a asp-action="Edit" asp-route-id="@b.BookingID" class="btn btn-secondary btn-sm">Edit</a>
-                                        }
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<!-- Enhanced search bar -->
+<form method="get" class="search-bar">
+    <div class="form-group">
+        <label>Search</label>
+        <input name="SearchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Customer, venue or event…" />
+    </div>
+    <div class="form-group">
+        <label>Status</label>
+        <select name="StatusFilter" class="form-control">
+            <option value="">All statuses</option>
+            <option value="Confirmed" selected="@(Model.StatusFilter == "Confirmed")">Confirmed</option>
+            <option value="Pending" selected="@(Model.StatusFilter == "Pending")">Pending</option>
+            <option value="Cancelled" selected="@(Model.StatusFilter == "Cancelled")">Cancelled</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Venue</label>
+        <select name="VenueFilter" class="form-control" asp-items="Model.Venues">
+            <option value="">All venues</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>From</label>
+        <input type="date" name="FromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>To</label>
+        <input type="date" name="ToDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="form-group" style="justify-content:flex-end">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a asp-action="Index" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
+
+
+<!-- Summary strip -->
+<div class="booking-summary-strip">
+    <div class="bss-item">
+        <span class="bss-num">@Model.Bookings.Count</span>
+        <span class="bss-label">results</span>
+    </div>
+    <div class="bss-item">
+        <span class="bss-num" style="color:var(--clr-primary)">@Model.Bookings.Count(b => b.Status == "Confirmed")</span>
+        <span class="bss-label">confirmed</span>
+    </div>
+    <div class="bss-item">
+        <span class="bss-num" style="color:var(--clr-amber)">@Model.Bookings.Count(b => b.Status == "Pending")</span>
+        <span class="bss-label">pending</span>
+    </div>
+    <div class="bss-item">
+        <span class="bss-num" style="color:var(--clr-text-muted)">@Model.Bookings.Count(b => b.Status == "Cancelled")</span>
+        <span class="bss-label">cancelled</span>
+    </div>
+    <div class="bss-item">
+        <span class="bss-num" style="color:var(--clr-primary)">
+            R @Model.Bookings.Where(b => b.Status == "Confirmed").Sum(b => b.TotalPrice).ToString("N0")
+        </span>
+        <span class="bss-label">confirmed revenue</span>
+    </div>
+</div>
+
+
+<!-- Consolidated bookings table -->
+<div class="card">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Customer</th>
+                    <th>Event</th>
+                    <th>Venue</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Guests</th>
+                    <th>Total</th>
+                    <th>Specialist</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Bookings.Any())
+                {
+                    <tr>
+                        <td colspan="11" class="text-muted" style="padding:32px;text-align:center">
+                            No bookings match your search criteria.
+                        </td>
+                    </tr>
+                }
+                @foreach (var b in Model.Bookings)
+                {
+                    <tr class="booking-row booking-@b.Status.ToLower()">
+                        <td>
+                            <a asp-action="Details" asp-route-id="@b.BookingID"
+                               style="font-weight:500">#@b.BookingID</a>
+                        </td>
+                        <td>
+                            <div style="font-weight:500">@b.Customer?.FullName</div>
+                            <div class="text-muted" style="font-size:11px">@b.Customer?.phoneNumber</div>
+                        </td>
+                        <td>@b.Event?.EventName</td>
+                        <td>
+                            <div>@b.Venue?.VenueName</div>
+                            <div class="text-muted" style="font-size:11px">@b.Venue?.Location</div>
+                        </td>
+                        <td>@b.EventDate.ToString("dd MMM yyyy")</td>
+                        <td style="white-space:nowrap">
+                            @b.StartTime.ToString(@"hh\:mm") – @b.EndTime.ToString(@"hh\:mm")
+                        </td>
+                        <td>@b.GuestCount.ToString("N0")</td>
+                        <td style="font-weight:500;color:var(--clr-primary)">
+                            R @b.TotalPrice.ToString("N2")
+                        </td>
+                        <td class="text-muted" style="font-size:12px">@b.Specialist?.FullName</td>
+                        <td>
+                            <span class="badge badge-@b.Status.ToLower()">@b.Status</span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a asp-action="Details" asp-route-id="@b.BookingID" class="btn btn-secondary btn-sm">View</a>
+                                @if (b.Status != "Cancelled")
+                                {
+                                    <a asp-action="Edit" asp-route-id="@b.BookingID" class="btn btn-secondary btn-sm">Edit</a>
+                                    <form asp-action="Cancel" asp-route-id="@b.BookingID" method="post" style="display:inline"
+                                          onsubmit="return confirm('Cancel booking #@b.BookingID? The venue slot will be freed.')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-warning btn-sm">Cancel</button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

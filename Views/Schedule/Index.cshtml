@@ -11,16 +11,20 @@
     int? selectedVenue = ViewData["SelectedVenue"] as int?;
     var venues = ViewData["Venues"] as IEnumerable<EventEase_st10157545_POE.Models.VenueViewModel> ?? new List<EventEase_st10157545_POE.Models.VenueViewModel>();
 
+
     // Build a dictionary: day number → bookings
     var byDay = Model.GroupBy(b => b.EventDate.Day).ToDictionary(g => g.Key, g => g.ToList());
+
 
     var firstDay = new DateTime(year, month, 1);
     int startDow = (int)firstDay.DayOfWeek; // 0=Sun
     int daysInMonth = DateTime.DaysInMonth(year, month);
 
+
     var prev = firstDay.AddMonths(-1);
     var next = firstDay.AddMonths(1);
 }
+
 
 <div class="page-header">
     <div>
@@ -29,6 +33,7 @@
     </div>
     <a asp-controller="Bookings" asp-action="Create" class="btn btn-primary">+ New Booking</a>
 </div>
+
 
 <!-- Controls -->
 <div class="search-bar" style="justify-content:space-between;align-items:center">
@@ -54,9 +59,11 @@
     <a asp-action="Day" class="btn btn-secondary btn-sm">Today's Detail</a>
 </div>
 
+
 <!-- Calendar -->
 <div class="card">
     <div class="card-body" style="padding:16px">
+
 
         <!-- Day headers -->
         <div class="calendar-grid">
@@ -66,6 +73,7 @@
             }
         </div>
 
+
         <!-- Day cells -->
         <div class="calendar-grid" style="margin-top:4px">
             @{
@@ -74,6 +82,7 @@
                 {
                     <div class="cal-cell other-month"></div>
                 }
+
 
                 for (int day = 1; day <= daysInMonth; day++)
                 {
@@ -85,8 +94,8 @@
                             @foreach (var b in byDay[day].Take(3))
                             {
                                 <a class="cal-event @b.Status.ToLower()"
-                                       asp-controller="Bookings" asp-action="Details" asp-route-id="@b.BookingID"
-                                       title="@b.Event?.EventName — @b.Venue?.VenueName (@b.StartTime.ToString(@"hh\:mm"))">
+                                   asp-controller="Bookings" asp-action="Details" asp-route-id="@b.BookingID"
+                                   title="@b.Event?.EventName — @b.Venue?.VenueName (@b.StartTime.ToString(@"hh\:mm"))">
                                     @b.Event?.EventName
                                 </a>
                             }
@@ -97,6 +106,7 @@
                         }
                     </div>
                 }
+
 
                 // Fill remaining cells
                 int cellsUsed = startDow + daysInMonth;
@@ -110,6 +120,7 @@
                 }
             }
         </div>
+
 
         <!-- Legend -->
         <div style="display:flex;gap:16px;margin-top:12px;font-size:12px">

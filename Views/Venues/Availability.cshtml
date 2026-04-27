@@ -5,7 +5,7 @@
 @{
     ViewData["Title"] = "Venue Availability";
     var venue = ViewData["Venue"] as EventEase_st10157545_POE.Models.VenueViewModel;
-    var date  = (DateTime)ViewData["Date"]!;
+    var date = (DateTime)ViewData["Date"]!;
 }
 
 <div class="page-header">
@@ -51,9 +51,9 @@
                     @foreach (var s in Model.OrderBy(s => s.StartTime))
                     {
                         <tr>
-                            <td>@s.StartTime?.ToString(@"hh\:mm")</td>
-                            <td>@s.EndTime?.ToString(@"hh\:mm")</td>
-                            <td><span class="badge @(s.Status == "Reserved" ? "badge-confirmed" : s.isBlocked ? "badge-cancelled" : "badge-pending")
+                            <td>@s.StartTime.Value.ToString(@"hh\:mm")</td>
+                            <td>@s.EndTime.Value.ToString(@"hh\:mm")</td>
+                            <td><span class="badge @(s.Status == "Reserved" ? "badge-confirmed" : s.isBlocked ? "badge-cancelled" : "badge-pending")">@s.Status</span></td>
                             <td>@(s.Booking?.Customer?.FullName ?? "—")</td>
                             <td>
                                 @if (s.BookingID.HasValue)
@@ -62,7 +62,11 @@
                                         @(s.Booking?.Event?.EventName ?? $"Booking #{s.BookingID}")
                                     </a>
                                 }
-                                else { <span class="text-muted">@(s.BlockReason ?? "Blocked")</span> }
+                                else
+                                {
+
+                                    <span class="text-muted">@(s.BlockReason ?? "Blocked")</span>
+                                }
                             </td>
                             <td class="text-muted">@s.BlockReason</td>
                         </tr>
@@ -72,4 +76,3 @@
         </div>
     }
 </div>
-

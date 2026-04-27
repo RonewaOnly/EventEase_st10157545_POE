@@ -2,9 +2,8 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @model EventEase_st10157545_POE.Models.ViewModels.BookingCreateViewModel
-@{
-    ViewData["Title"] = $"Edit Booking #{Model.Booking.BookingID}";
-}
+@{ ViewData["Title"] = $"Edit Booking #{Model.Booking.BookingID}"; }
+
 
 <div class="page-header">
     <div>
@@ -14,6 +13,7 @@
     <a asp-action="Details" asp-route-id="@Model.Booking.BookingID" class="btn btn-secondary">← Cancel Edit</a>
 </div>
 
+
 @if (!string.IsNullOrEmpty(Model.ConflictMessage))
 {
     <div class="conflict-alert">
@@ -22,6 +22,7 @@
     </div>
 }
 
+
 <div class="card">
     <div class="card-body">
         <form asp-action="Edit" method="post">
@@ -29,6 +30,7 @@
             <input type="hidden" asp-for="Booking.BookingID" />
             <input type="hidden" asp-for="Booking.BookingDate" />
             <input type="hidden" id="excludeBookingId" value="@Model.Booking.BookingID" />
+
 
             <div class="form-grid">
                 <div class="form-group">
@@ -39,6 +41,7 @@
                     <span asp-validation-for="Booking.CustomerID" class="field-validation-error"></span>
                 </div>
 
+
                 <div class="form-group">
                     <label asp-for="Booking.EventID"></label>
                     <select asp-for="Booking.EventID" asp-items="Model.Events" class="form-control">
@@ -46,6 +49,7 @@
                     </select>
                     <span asp-validation-for="Booking.EventID" class="field-validation-error"></span>
                 </div>
+
 
                 <div class="form-group">
                     <label asp-for="Booking.VenueID"></label>
@@ -55,6 +59,7 @@
                     <span asp-validation-for="Booking.VenueID" class="field-validation-error"></span>
                 </div>
 
+
                 <div class="form-group">
                     <label asp-for="Booking.SpecialistID"></label>
                     <select asp-for="Booking.SpecialistID" asp-items="Model.Specialists" class="form-control">
@@ -63,11 +68,13 @@
                     <span asp-validation-for="Booking.SpecialistID" class="field-validation-error"></span>
                 </div>
 
+
                 <div class="form-group">
                     <label asp-for="Booking.EventDate"></label>
                     <input asp-for="Booking.EventDate" type="date" class="form-control" id="Booking_EventDate" />
                     <span asp-validation-for="Booking.EventDate" class="field-validation-error"></span>
                 </div>
+
 
                 <div class="form-group">
                     <label asp-for="Booking.GuestCount"></label>
@@ -75,11 +82,13 @@
                     <span asp-validation-for="Booking.GuestCount" class="field-validation-error"></span>
                 </div>
 
+
                 <div class="form-group">
                     <label asp-for="Booking.StartTime"></label>
                     <input asp-for="Booking.StartTime" type="time" class="form-control" id="Booking_StartTime" />
                     <span asp-validation-for="Booking.StartTime" class="field-validation-error"></span>
                 </div>
+
 
                 <div class="form-group">
                     <label asp-for="Booking.EndTime"></label>
@@ -87,6 +96,7 @@
                     <span asp-validation-for="Booking.EndTime" class="field-validation-error"></span>
                     <div id="availability-status"></div>
                 </div>
+
 
                 <div class="form-group">
                     <label asp-for="Booking.Status"></label>
@@ -97,11 +107,13 @@
                     </select>
                 </div>
 
+
                 <div class="form-group full">
                     <label asp-for="Booking.Notes"></label>
                     <textarea asp-for="Booking.Notes" class="form-control" rows="3"></textarea>
                 </div>
             </div>
+
 
             <div class="btn-group mt-4">
                 <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -110,3 +122,5 @@
         </form>
     </div>
 </div>
+
+

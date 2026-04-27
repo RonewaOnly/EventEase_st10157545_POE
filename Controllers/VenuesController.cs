@@ -2,6 +2,7 @@
 using EventEase_st10157545_POE.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using EventEase_st10157545_POE.Services;
 
 namespace EventEase_st10157545_POE.Controllers
 {
@@ -50,7 +51,7 @@ namespace EventEase_st10157545_POE.Controllers
             if (!ModelState.IsValid) return View(venue);
             if (venue.ImageFile != null && venue.ImageFile.Length > 0)
             {
-                try { venue.ImageURL = await _blob.UploadVenueImageAsync(venue.ImageFile); }
+                try { venue.ImageUrl = await _blob.UploadVenueImageAsync(venue.ImageFile); }
                 catch (InvalidOperationException ex) { ModelState.AddModelError("ImageFile", ex.Message); return View(venue); }
             }
             _context.Venue.Add(venue);
@@ -78,8 +79,8 @@ namespace EventEase_st10157545_POE.Controllers
                     try
                     {
                         var existing = await _context.Venue.AsNoTracking().FirstOrDefaultAsync(v => v.VenueID == id);
-                        if (existing?.ImageURL != null) await _blob.DeleteImageAsync(existing.ImageURL);
-                        venue.ImageURL = await _blob.UploadVenueImageAsync(venue.ImageFile);
+                        if (existing?.ImageUrl != null) await _blob.DeleteImageAsync(existing.ImageUrl);
+                        venue.ImageUrl = await _blob.UploadVenueImageAsync(venue.ImageFile);
                     }
                     catch (InvalidOperationException ex) { ModelState.AddModelError("ImageFile", ex.Message); return View(venue); }
                 }
@@ -101,7 +102,7 @@ namespace EventEase_st10157545_POE.Controllers
             if (venue == null) return NotFound();
             var activeCount = venue.Bookings.Count(b => b.Status != "Cancelled");
             if (activeCount > 0)
-                ViewData["ActiveBookingWarning"] = $"This venue has {activeCount} active booking(s). It will be deactivated rather than permanently deleted to preserve booking 
+                ViewData["ActiveBookingWarning"] = $"This venue has {activeCount} active booking(s). It will be deactivated rather than permanently deleted to preserve booking history.";
             return View(venue);
         }
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
@@ -117,7 +118,7 @@ namespace EventEase_st10157545_POE.Controllers
             }
             else
             {
-                if (!string.IsNullOrEmpty(venue.ImageURL)) await _blob.DeleteImageAsync(venue.ImageURL);
+                if (!string.IsNullOrEmpty(venue.ImageUrl)) await _blob.DeleteImageAsync(venue.ImageUrl);
                 _context.Venue.Remove(venue);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Venue permanently deleted.";

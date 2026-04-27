@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EventEase_st10157545_POE.Models;
+using EventEase_st10157545_POE.Services;
 
 namespace EventEase_st10157545_POE.Controllers
 {
     public class EventsController : Controller
     {
-            
+
 
         private readonly EventEaseDbContext _context;
         private readonly BlobStorageService _blob;
@@ -117,4 +118,5 @@ namespace EventEase_st10157545_POE.Controllers
             TempData["Success"] = "Event deleted.";
             return RedirectToAction(nameof(Index));
         }
+    }
 }

@@ -3,30 +3,70 @@
 *@
 @model EventEase_st10157545_POE.Models.VenueViewModel
 @{
-    ViewData["Title"] = "Deactivate Venue";
+    ViewData["Title"] = "Delete / Deactivate Venue";
 }
 
+
 <div class="page-header">
-    <h1>Deactivate Venue</h1>
+    <h1>Delete Venue</h1>
 </div>
 
-<div class="card" style="max-width:500px">
+
+@if (ViewData["ActiveBookingWarning"] != null)
+{
+    <div class="alert alert-warning" style="margin-bottom:16px">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75
+                1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1
+                1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                  clip-rule="evenodd" />
+        </svg>
+        <strong>Active bookings exist:</strong> @ViewData["ActiveBookingWarning"]
+    </div>
+}
+
+
+<div class="card" style="max-width:560px">
     <div class="card-body">
-        <p style="margin-bottom:16px">
-            This will mark the venue as <strong>inactive</strong>. It will no longer appear in the venue selection list for new bookings.
-            Existing bookings will not be affected.
-        </p>
+        @if (ViewData["ActiveBookingWarning"] != null)
+        {
+            <p style="margin-bottom:16px">
+                Because this venue has active bookings, it will be <strong>deactivated</strong>
+                (hidden from new bookings) rather than permanently deleted. All existing booking
+                records will be preserved.
+            </p>
+        }
+        else
+        {
+            <p style="margin-bottom:16px">
+                This venue has no active bookings and will be <strong>permanently deleted</strong>,
+                including its image from Azure Blob Storage. This action cannot be undone.
+            </p>
+        }
+
+
         <table style="width:100%;font-size:14px;margin-bottom:20px">
             <tr><td class="text-muted" style="padding:5px 0;width:40%">Venue</td><td>@Model.VenueName</td></tr>
             <tr><td class="text-muted" style="padding:5px 0">Location</td><td>@Model.Location</td></tr>
             <tr><td class="text-muted" style="padding:5px 0">Capacity</td><td>@Model.Capacity guests</td></tr>
+            <tr><td class="text-muted" style="padding:5px 0">Price</td><td>R @Model.PricePerDay.Value.ToString("N2") / day</td></tr>
         </table>
+
+
         <form asp-action="Delete" method="post">
             @Html.AntiForgeryToken()
             <div class="btn-group">
-                <button type="submit" class="btn btn-warning">Deactivate Venue</button>
+                @if (ViewData["ActiveBookingWarning"] != null)
+                {
+                    <button type="submit" class="btn btn-warning">Deactivate Venue</button>
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-danger">Delete Permanently</button>
+                }
                 <a asp-action="Details" asp-route-id="@Model.VenueID" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
+
