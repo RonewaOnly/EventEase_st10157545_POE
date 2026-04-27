@@ -22,7 +22,7 @@ namespace EventEase_st10157545_POE.Services
                     "Add it to App Service Configuration or appsettings.Development.json.");
             _blobServiceClient = new BlobServiceClient(connectionString);
         }
-        // ── Upload ────────────────────────────────────────────────────────────
+        //  Upload 
         /// <summary>
         /// Uploads an image file to the specified container and returns its public URL.
         /// Accepts JPEG, PNG, GIF, and WEBP only. Max size 5 MB enforced by the caller.
@@ -50,12 +50,12 @@ namespace EventEase_st10157545_POE.Services
             });
             return blobClient.Uri.ToString();
         }
-        // ── Upload helpers by entity type 
+        //Upload helpers by entity type 
         public Task<string?> UploadVenueImageAsync(IFormFile file)
             => UploadImageAsync(file, VenueContainer);
         public Task<string?> UploadEventImageAsync(IFormFile file)
             => UploadImageAsync(file, EventContainer);
-        // ── Delete 
+        //Delete 
         /// <summary>
         /// Deletes a blob by its full URL. Safe to call with null or non-blob URLs.
         /// </summary>
