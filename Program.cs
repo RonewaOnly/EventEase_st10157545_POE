@@ -1,7 +1,8 @@
 using EventEase_st10157545_POE.Data;
-using Microsoft.EntityFrameworkCore;
 using EventEase_st10157545_POE.Services;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 namespace EventEase_st10157545_POE
 {
     public class Program
@@ -32,7 +33,13 @@ namespace EventEase_st10157545_POE
 
             });
 
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new Exception("Connection string 'DefaultConnection' is null. Check your appsettings files and environment.");
+            }
+            
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
