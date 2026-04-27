@@ -23,7 +23,7 @@ namespace EventEase_st10157545_POE.Data
 
 
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            var rawconnectionString = configuration["ConnectionStrings:DefaultConnection"];
+            //var rawconnectionString = configuration["ConnectionStrings:DefaultConnection"];
 
            /* Console.WriteLine("BASE PATH: " + basePath);
             Console.WriteLine("FILE EXISTS: " + File.Exists(Path.Combine(basePath, "appsettings.Development.json")));
