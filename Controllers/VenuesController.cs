@@ -8,65 +8,56 @@ namespace EventEase_st10157545_POE.Controllers
     public class VenuesController : Controller
     {
         private readonly EventEaseDbContext _context;
-
-        public VenuesController(EventEaseDbContext context)
+        private readonly BlobStorageService _blob;
+        public VenuesController(EventEaseDbContext context, BlobStorageService blob)
         {
             _context = context;
+            _blob = blob;
         }
-
-        // GET: Venues
-        public async Task<IActionResult> Index(string? search, bool showInactive = false)
+        public async Task<IActionResult> Index(string? search, int? minCapacity, int? maxCapacity, decimal? minPrice, decimal? maxPrice, bool showInactive = false)
         {
             ViewData["Search"] = search;
+            ViewData["MinCapacity"] = minCapacity;
+            ViewData["MaxCapacity"] = maxCapacity;
+            ViewData["MinPrice"] = minPrice;
+            ViewData["MaxPrice"] = maxPrice;
             ViewData["ShowInactive"] = showInactive;
-
             var query = _context.Venue.AsQueryable();
-
-            if (!showInactive)
-                query = query.Where(v => v.IsActive);
-
+            if (!showInactive) query = query.Where(v => v.IsActive);
             if (!string.IsNullOrWhiteSpace(search))
-                query = query.Where(v =>
-                    v.VenueName.Contains(search) ||
-                    v.Location.Contains(search));
-
+                query = query.Where(v => v.VenueName.Contains(search) || v.Location.Contains(search) || (v.Description != null && v.Description.Contains(search)));
+            if (minCapacity.HasValue) query = query.Where(v => v.Capacity >= minCapacity.Value);
+            if (maxCapacity.HasValue) query = query.Where(v => v.Capacity <= maxCapacity.Value);
+            if (minPrice.HasValue) query = query.Where(v => v.PricePerDay >= minPrice.Value);
+            if (maxPrice.HasValue) query = query.Where(v => v.PricePerDay <= maxPrice.Value);
             return View(await query.OrderBy(v => v.VenueName).ToListAsync());
         }
-
-        // GET: Venues/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
-
             var venue = await _context.Venue
-                .Include(v => v.Bookings)
-                    .ThenInclude(b => b.Customer)
-                .Include(v => v.Bookings)
-                    .ThenInclude(b => b.Event)
+                .Include(v => v.Bookings).ThenInclude(b => b.Customer)
+                .Include(v => v.Bookings).ThenInclude(b => b.Event)
                 .FirstOrDefaultAsync(v => v.VenueID == id);
-
             if (venue == null) return NotFound();
             return View(venue);
         }
-
-        // GET: Venues/Create
         public IActionResult Create() => View();
-
-        // POST: Venues/Create
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(VenueViewModel venue)
         {
-            if (ModelState.IsValid)
+            ModelState.Remove("ImageFile");
+            if (!ModelState.IsValid) return View(venue);
+            if (venue.ImageFile != null && venue.ImageFile.Length > 0)
             {
-                _context.Venue.Add(venue);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = $"Venue '{venue.VenueName}' created successfully.";
-                return RedirectToAction(nameof(Index));
+                try { venue.ImageURL = await _blob.UploadVenueImageAsync(venue.ImageFile); }
+                catch (InvalidOperationException ex) { ModelState.AddModelError("ImageFile", ex.Message); return View(venue); }
             }
-            return View(venue);
+            _context.Venue.Add(venue);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = $"Venue '{venue.VenueName}' created successfully.";
+            return RedirectToAction(nameof(Index));
         }
-
-        // GET: Venues/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -74,70 +65,74 @@ namespace EventEase_st10157545_POE.Controllers
             if (venue == null) return NotFound();
             return View(venue);
         }
-
-        // POST: Venues/Edit/5
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, VenueViewModel venue)
         {
             if (id != venue.VenueID) return NotFound();
-
-            if (ModelState.IsValid)
+            ModelState.Remove("ImageFile");
+            if (!ModelState.IsValid) return View(venue);
+            try
             {
-                try
+                if (venue.ImageFile != null && venue.ImageFile.Length > 0)
                 {
-                    _context.Update(venue);
-                    await _context.SaveChangesAsync();
-                    TempData["Success"] = "Venue updated successfully.";
+                    try
+                    {
+                        var existing = await _context.Venue.AsNoTracking().FirstOrDefaultAsync(v => v.VenueID == id);
+                        if (existing?.ImageURL != null) await _blob.DeleteImageAsync(existing.ImageURL);
+                        venue.ImageURL = await _blob.UploadVenueImageAsync(venue.ImageFile);
+                    }
+                    catch (InvalidOperationException ex) { ModelState.AddModelError("ImageFile", ex.Message); return View(venue); }
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Venue.Any(v => v.VenueID == id)) return NotFound();
-                    throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(venue);
-        }
-
-        // GET: Venues/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
-            var venue = await _context.Venue.FirstOrDefaultAsync(v => v.VenueID == id);
-            if (venue == null) return NotFound();
-            return View(venue);
-        }
-
-        // POST: Venues/Delete/5
-        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var venue = await _context.Venue.FindAsync(id);
-            if (venue != null)
-            {
-                // Soft delete — mark inactive instead of removing
-                venue.IsActive = false;
+                _context.Update(venue);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Venue deactivated successfully.";
+                TempData["Success"] = "Venue updated successfully.";
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Venue.Any(v => v.VenueID == id)) return NotFound();
+                throw;
             }
             return RedirectToAction(nameof(Index));
         }
-
-        // GET: Venues/Availability/5?date=2026-06-15
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+            var venue = await _context.Venue.Include(v => v.Bookings).FirstOrDefaultAsync(v => v.VenueID == id);
+            if (venue == null) return NotFound();
+            var activeCount = venue.Bookings.Count(b => b.Status != "Cancelled");
+            if (activeCount > 0)
+                ViewData["ActiveBookingWarning"] = $"This venue has {activeCount} active booking(s). It will be deactivated rather than permanently deleted to preserve booking 
+            return View(venue);
+        }
+        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var venue = await _context.Venue.Include(v => v.Bookings).FirstOrDefaultAsync(v => v.VenueID == id);
+            if (venue == null) return NotFound();
+            if (venue.Bookings.Any(b => b.Status != "Cancelled"))
+            {
+                venue.IsActive = false;
+                await _context.SaveChangesAsync();
+                TempData["Warning"] = "Venue deactivated. It cannot be permanently deleted while active bookings exist.";
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(venue.ImageURL)) await _blob.DeleteImageAsync(venue.ImageURL);
+                _context.Venue.Remove(venue);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Venue permanently deleted.";
+            }
+            return RedirectToAction(nameof(Index));
+        }
         public async Task<IActionResult> Availability(int id, DateTime? date)
         {
             var venue = await _context.Venue.FindAsync(id);
             if (venue == null) return NotFound();
-
             var checkDate = date ?? DateTime.Today;
-
             var schedules = await _context.VenueSchedules
-                .Include(vs => vs.Booking)
-                    .ThenInclude(b => b!.Customer)
-                .Where(vs => vs.VenueID == id && vs.EventDate.Value == checkDate.Date)
-                .OrderBy(vs => vs.StartTime)
-                .ToListAsync();
-
+                .Include(vs => vs.Booking).ThenInclude(b => b!.Customer)
+                .Where(vs => vs.VenueID == id && vs.EventDate == checkDate.Date)
+                .OrderBy(vs => vs.StartTime).ToListAsync();
             ViewData["Venue"] = venue;
             ViewData["Date"] = checkDate;
             return View(schedules);
