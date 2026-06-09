@@ -1,7 +1,8 @@
-﻿using EventEase_st10157545_POE.Data;
-using EventEase_st10157545_POE.Models.ViewModels;
+﻿
 using EventEase_st10157545_POE.Models;
-
+using EventEase_st10157545_POE.Data;
+using EventEase_st10157545_POE.Filter;
+using EventEase_st10157545_POE.Models.ViewModels;
 using EventEase_st10157545_POE.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,29 +10,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EventEase_st10157545_POE.Controllers
 {
+    [RequireLogin]
     public class BookingsController : Controller
     {
         private readonly EventEaseDbContext _context;
         private readonly BookingConflictService _conflictService;
         private readonly AuditService _auditService;
 
-        public BookingsController(
-            EventEaseDbContext context,
-            BookingConflictService conflictService,
-            AuditService auditService)
+        public BookingsController(EventEaseDbContext context,
+            BookingConflictService conflictService, AuditService auditService)
         {
             _context = context;
             _conflictService = conflictService;
             _auditService = auditService;
         }
 
-        // GET: Bookings
+        // GET: Bookings — Part 3: adds EventType filter
         public async Task<IActionResult> Index(BookingSearchViewModel vm)
         {
             var query = _context.Bookings
                 .Include(b => b.Customer)
                 .Include(b => b.Venue)
-                .Include(b => b.Event)
+                .Include(b => b.Event).ThenInclude(e => e!.EventType)
                 .Include(b => b.Specialist)
                 .AsQueryable();
 
@@ -45,69 +45,70 @@ namespace EventEase_st10157545_POE.Controllers
             if (!string.IsNullOrWhiteSpace(vm.StatusFilter))
                 query = query.Where(b => b.Status == vm.StatusFilter);
 
+            if (vm.VenueFilter.HasValue)
+                query = query.Where(b => b.VenueID == vm.VenueFilter.Value);
+
             if (vm.FromDate.HasValue)
                 query = query.Where(b => b.EventDate >= vm.FromDate.Value);
 
             if (vm.ToDate.HasValue)
                 query = query.Where(b => b.EventDate <= vm.ToDate.Value);
 
-            if (vm.VenueFilter.HasValue)
-                query = query.Where(b => b.VenueID == vm.VenueFilter.Value);
+            // Part 3: filter by event type through the Event navigation
+            if (vm.EventTypeFilter.HasValue)
+                query = query.Where(b => b.Event!.EventTypeID == vm.EventTypeFilter.Value);
 
             vm.Bookings = await query.OrderByDescending(b => b.EventDate).ToListAsync();
-            vm.Venues = new SelectList(await _context.Venue.Where(v => v.IsActive).ToListAsync(), "VenueID", "VenueName");
+
+            vm.Venues = new SelectList(
+                await _context.Venue.Where(v => v.IsActive).OrderBy(v => v.VenueName).ToListAsync(),
+                "VenueID", "VenueName", vm.VenueFilter);
+
+            vm.EventTypes = new SelectList(
+                await _context.EventTypes.Where(t => t.IsActive).OrderBy(t => t.TypeName).ToListAsync(),
+                "EventTypeID", "TypeName", vm.EventTypeFilter);
 
             return View(vm);
         }
 
-        // GET: Bookings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
-
             var booking = await _context.Bookings
                 .Include(b => b.Customer)
                 .Include(b => b.Venue)
-                .Include(b => b.Event)
+                .Include(b => b.Event).ThenInclude(e => e!.EventType)
                 .Include(b => b.Specialist)
                 .FirstOrDefaultAsync(b => b.BookingID == id);
-
             if (booking == null) return NotFound();
             return View(booking);
         }
 
-        // GET: Bookings/Create
         public async Task<IActionResult> Create()
         {
             var vm = await BuildCreateVmAsync();
             return View(vm);
         }
 
-        // POST: Bookings/Create
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(BookingCreateViewModel vm)
         {
-            if (!ModelState.IsValid)
-            {
-                await PopulateCreateVmAsync(vm);
-                return View(vm);
-            }
+            if (!ModelState.IsValid) { await PopulateCreateVmAsync(vm); return View(vm); }
 
             var b = vm.Booking;
 
-            // ── Conflict check ────────────────────────────────────────────────
+            // Conflict check
             if (await _conflictService.HasConflictAsync(b.VenueID, b.EventDate, b.StartTime, b.EndTime))
             {
                 var conflicts = await _conflictService.GetConflictAsync(b.VenueID, b.EventDate, b.StartTime, b.EndTime);
-                vm.ConflictMessage = $"This venue is already booked on {b.EventDate:dd MMM yyyy} " +
-                    $"from {conflicts.First().StartTime:hh\\:mm} to {conflicts.First().EndTime:hh\\:mm} " +
-                    $"({conflicts.First().Customer?.FullName} — {conflicts.First().Event?.EventName}). " +
-                    "Please choose a different time or venue.";
+                vm.ConflictMessage = $"Venue conflict: {conflicts.First().Customer?.FullName} — " +
+                    $"{conflicts.First().Event?.EventName} " +
+                    $"({conflicts.First().StartTime:hh\\:mm}–{conflicts.First().EndTime:hh\\:mm}).";
                 await PopulateCreateVmAsync(vm);
                 return View(vm);
             }
 
-            // ── Capacity check 
+            // Capacity check
             if (await _conflictService.ExceedsCapacityAsync(b.VenueID, b.GuestCount))
             {
                 var venue = await _context.Venue.FindAsync(b.VenueID);
@@ -117,15 +118,22 @@ namespace EventEase_st10157545_POE.Controllers
                 return View(vm);
             }
 
-            // ── Calculate total price 
+            // Availability check
             var selectedVenue = await _context.Venue.FindAsync(b.VenueID);
+            if (selectedVenue != null && !selectedVenue.IsAvailable)
+            {
+                ModelState.AddModelError("Booking.VenueID",
+                    "This venue is currently marked as unavailable. Please choose another venue.");
+                await PopulateCreateVmAsync(vm);
+                return View(vm);
+            }
+
             b.TotalPrice = selectedVenue?.PricePerDay ?? 0;
             b.BookingDate = DateTime.Now;
 
             _context.Bookings.Add(b);
             await _context.SaveChangesAsync();
 
-            // ── Create schedule entry 
             _context.VenueSchedules.Add(new VenueAvaliabilityViewModel
             {
                 VenueID = b.VenueID,
@@ -135,70 +143,49 @@ namespace EventEase_st10157545_POE.Controllers
                 EndTime = b.EndTime,
                 Status = "Reserved"
             });
-            await _context.SaveChangesAsync();
 
-            // ── Update event status 
             var ev = await _context.Event.FindAsync(b.EventID);
-            if (ev != null)
-            {
-                ev.Status = "Confirmed";
-                await _context.SaveChangesAsync();
-            }
+            if (ev != null) { ev.Status = "Confirmed"; }
 
-            // ── Audit 
+            await _context.SaveChangesAsync();
             await _auditService.LogAsync(b.SpecialistID, "Create", "Booking", b.BookingID,
                 $"Booking created for {b.EventDate:dd MMM yyyy}");
 
-            TempData["Success"] = $"Booking #{b.BookingID} created successfully.";
+            TempData["Success"] = $"Booking #{b.BookingID} created.";
             return RedirectToAction(nameof(Details), new { id = b.BookingID });
         }
 
-        // GET: Bookings/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
-
             var booking = await _context.Bookings.FindAsync(id);
             if (booking == null) return NotFound();
-
             var vm = await BuildCreateVmAsync();
             vm.Booking = booking;
             return View(vm);
         }
 
-        // POST: Bookings/Edit/5
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, BookingCreateViewModel vm)
         {
             if (id != vm.Booking.BookingID) return NotFound();
-
-            if (!ModelState.IsValid)
-            {
-                await PopulateCreateVmAsync(vm);
-                return View(vm);
-            }
+            if (!ModelState.IsValid) { await PopulateCreateVmAsync(vm); return View(vm); }
 
             var b = vm.Booking;
-
-            // Conflict check (exclude this booking from the check)
             if (await _conflictService.HasConflictAsync(b.VenueID, b.EventDate, b.StartTime, b.EndTime, b.BookingID))
             {
                 var conflicts = await _conflictService.GetConflictAsync(b.VenueID, b.EventDate, b.StartTime, b.EndTime, b.BookingID);
-                vm.ConflictMessage = $"Venue conflict: {conflicts.First().Customer?.FullName} — {conflicts.First().Event?.EventName} " +
-                    $"({conflicts.First().StartTime:hh\\:mm}–{conflicts.First().EndTime:hh\\:mm}).";
+                vm.ConflictMessage = $"Conflict: {conflicts.First().Customer?.FullName} — {conflicts.First().Event?.EventName}.";
                 await PopulateCreateVmAsync(vm);
                 return View(vm);
             }
 
             try
             {
-                // Recalculate price
                 var venue = await _context.Venue.FindAsync(b.VenueID);
                 b.TotalPrice = venue?.PricePerDay ?? 0;
-
                 _context.Update(b);
 
-                // Update schedule entry
                 var schedule = await _context.VenueSchedules.FirstOrDefaultAsync(vs => vs.BookingID == b.BookingID);
                 if (schedule != null)
                 {
@@ -210,43 +197,32 @@ namespace EventEase_st10157545_POE.Controllers
 
                 await _context.SaveChangesAsync();
                 await _auditService.LogAsync(b.SpecialistID, "Update", "Booking", b.BookingID, "Booking updated");
-
-                TempData["Success"] = "Booking updated successfully.";
+                TempData["Success"] = "Booking updated.";
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!_context.Bookings.Any(b2 => b2.BookingID == id)) return NotFound();
                 throw;
             }
-
             return RedirectToAction(nameof(Details), new { id = b.BookingID });
         }
 
-        // POST: Bookings/Cancel/5
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Cancel(int id)
         {
             var booking = await _context.Bookings.FindAsync(id);
             if (booking == null) return NotFound();
-
             booking.Status = "Cancelled";
-
-            // Free up the schedule slot
             var schedule = await _context.VenueSchedules.FirstOrDefaultAsync(vs => vs.BookingID == id);
             if (schedule != null) schedule.Status = "Available";
-
-            // Revert event to Pending
             var ev = await _context.Event.FindAsync(booking.EventID);
             if (ev != null) ev.Status = "Pending";
-
             await _context.SaveChangesAsync();
             await _auditService.LogAsync(booking.SpecialistID, "Cancel", "Booking", id, "Booking cancelled");
-
-            TempData["Warning"] = $"Booking #{id} has been cancelled.";
+            TempData["Warning"] = $"Booking #{id} cancelled.";
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Bookings/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -257,17 +233,14 @@ namespace EventEase_st10157545_POE.Controllers
             return View(booking);
         }
 
-        // POST: Bookings/Delete/5
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var booking = await _context.Bookings.FindAsync(id);
             if (booking != null)
             {
-                // Remove schedule entry first
                 var schedule = await _context.VenueSchedules.FirstOrDefaultAsync(vs => vs.BookingID == id);
                 if (schedule != null) _context.VenueSchedules.Remove(schedule);
-
                 _context.Bookings.Remove(booking);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Booking deleted.";
@@ -275,24 +248,27 @@ namespace EventEase_st10157545_POE.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ── AJAX: check availability before submitting form 
         [HttpGet]
         public async Task<IActionResult> CheckAvailability(int venueId, string eventDate, string startTime, string endTime, int? excludeId)
         {
             if (!DateTime.TryParse(eventDate, out var date) ||
                 !TimeSpan.TryParse(startTime, out var start) ||
                 !TimeSpan.TryParse(endTime, out var end))
-                return Json(new { available = false, message = "Invalid date/time format." });
+                return Json(new { available = false, message = "Invalid date/time." });
+
+            var venue = await _context.Venue.FindAsync(venueId);
+            if (venue != null && !venue.IsAvailable)
+                return Json(new { available = false, message = "This venue is currently marked as unavailable." });
 
             var hasConflict = await _conflictService.HasConflictAsync(venueId, date, start, end, excludeId);
             return Json(new
             {
                 available = !hasConflict,
-                message = hasConflict ? "This slot is already booked." : "Slot is available!"
+                message = hasConflict ? "This slot is already booked." : "Slot is available."
             });
         }
 
-        // ── Helpers 
+        //  Helpers
         private async Task<BookingCreateViewModel> BuildCreateVmAsync()
         {
             var vm = new BookingCreateViewModel();
@@ -303,12 +279,11 @@ namespace EventEase_st10157545_POE.Controllers
         private async Task PopulateCreateVmAsync(BookingCreateViewModel vm)
         {
             vm.Customers = new SelectList(
-
                 await _context.Customer.OrderBy(c => c.LastName).ToListAsync(),
                 "CustomerID", "FullName");
 
             vm.Venues = new SelectList(
-                await _context.Venue.Where(v => v.IsActive).OrderBy(v => v.VenueName).ToListAsync(),
+                await _context.Venue.Where(v => v.IsActive && v.IsAvailable).OrderBy(v => v.VenueName).ToListAsync(),
                 "VenueID", "VenueName");
 
             vm.Events = new SelectList(
