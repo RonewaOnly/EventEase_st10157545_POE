@@ -36,6 +36,10 @@ namespace EventEase_st10157545_POE.Models
         [Display(Name = "Active")]
         public bool IsActive { get; set; } = true;
 
+       
+        [Display(Name = "Available for Booking")]
+        public bool IsAvailable { get; set; } = true; // Part 3: new property to track if the venue is currently available for booking (e.g. not under maintenance)
+
         [NotMapped]
         [Display(Name = "Upload New Image")]
         public IFormFile? ImageFile { get; set; }

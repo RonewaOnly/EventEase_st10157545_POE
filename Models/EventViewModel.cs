@@ -37,10 +37,18 @@ namespace EventEase_st10157545_POE.Models
         [NotMapped]
         [Display(Name = "Upload Event Image")]
         public IFormFile? ImageFile { get; set; }
-
+        /// <summary>
+        /// Part 3: FK to the new EventType lookup table.
+        /// Nullable so existing events without a type remain valid.
+        /// </summary>
+        [Display(Name = "Event Type")]
+        public int? EventTypeID { get; set; }
 
         //Referenced Table
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        // Navigation
+        [ForeignKey("EventTypeID")]
+        public EventType? EventType { get; set; }
 
     }
 }
