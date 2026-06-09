@@ -1,0 +1,46 @@
+﻿@model IEnumerable<EventEase_st10157545_POE.Models.EventType>
+@{
+    ViewData["Title"] = "Event Types";
+}
+
+<div class="page-header">
+    <div>
+        <h1>Event Types</h1>
+        <p>Manage the predefined event category lookup table</p>
+    </div>
+    <a asp-action="CreateEventType" class="btn btn-primary">+ Add Event Type</a>
+</div>
+
+<div class="card">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>#</th><th>Type Name</th><th>Description</th><th>Status</th><th>Events Using</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var et in Model)
+                {
+                    <tr>
+                        <td>@et.EventTypeID</td>
+                        <td style="font-weight:500">@et.TypeName</td>
+                        <td class="text-muted" style="font-size:13px">@et.Description</td>
+                        <td>
+                            <span class="badge @(et.IsActive ? "badge-confirmed" : "badge-cancelled")">
+                                @(et.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td>@et.Events.Count</td>
+                        <td>
+                            <form asp-action="ToggleEventType" asp-route-id="@et.EventTypeID" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-secondary btn-sm">
+                                    @(et.IsActive ? "Deactivate" : "Activate")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
