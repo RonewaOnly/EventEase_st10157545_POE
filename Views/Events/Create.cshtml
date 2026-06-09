@@ -1,32 +1,37 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@model EventEase_st10157545_POE.Models.EventViewModel
+﻿@model EventEase_st10157545_POE.Models.EventViewModel
 @{
     ViewData["Title"] = "Add Event";
 }
-
 
 <div class="page-header">
     <h1>Add Event</h1>
     <a asp-action="Index" class="btn btn-secondary">← Back</a>
 </div>
 
-
 <div class="card" style="max-width:660px">
     <div class="card-body">
         <p class="text-muted" style="margin-bottom:16px">
-            You can add an event before a venue is confirmed. Once a venue becomes available,
-            use <strong>Book Now</strong> to complete the booking.
+            You can add an event before a venue is confirmed.
+            Once a venue becomes available, use <strong>Book Now</strong> to complete the booking.
         </p>
         <form asp-action="Create" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
             <div class="form-grid">
                 <div class="form-group full">
                     <label asp-for="EventName"></label>
-                    <input asp-for="EventName" class="form-control" placeholder="e.g. Wedding, Conference, Birthday…" />
+                    <input asp-for="EventName" class="form-control" placeholder="e.g. Annual Conference…" />
                     <span asp-validation-for="EventName" class="field-validation-error"></span>
                 </div>
+
+                <!-- Part 3: Event Type dropdown -->
+                <div class="form-group full">
+                    <label asp-for="EventTypeID"></label>
+                    <select asp-for="EventTypeID" asp-items="ViewBag.EventTypes" class="form-control">
+                        <option value="">— Select event type —</option>
+                    </select>
+                    <small class="text-muted">Select the category that best describes this event.</small>
+                </div>
+
                 <div class="form-group">
                     <label asp-for="PreferredDate"></label>
                     <input asp-for="PreferredDate" type="date" class="form-control" />
@@ -41,17 +46,14 @@
                     <label asp-for="Description"></label>
                     <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 </div>
-
-
-                <!-- Image upload -->
                 <div class="form-group full">
                     <label asp-for="ImageFile"></label>
                     <input asp-for="ImageFile" type="file" accept="image/jpeg,image/png,image/gif,image/webp"
-                           class="form-control" onchange="previewImage(this,'eventPreview')" />
+                           class="form-control" onchange="previewImage(this,'evtPreview')" />
                     <small class="text-muted">Optional — JPEG, PNG, GIF or WEBP, max 5 MB.</small>
                     <span asp-validation-for="ImageFile" class="field-validation-error"></span>
-                    <div id="eventPreview" class="img-preview-wrap" style="display:none;margin-top:10px">
-                        <img id="eventPreviewImg" src="" alt="Preview" class="img-preview" />
+                    <div id="evtPreview" class="img-preview-wrap" style="display:none;margin-top:10px">
+                        <img id="evtPreviewImg" src="" alt="Preview" class="img-preview" />
                     </div>
                 </div>
             </div>
@@ -63,18 +65,16 @@
     </div>
 </div>
 
-
 @section Scripts {
     <script>
-        function previewImage(input, previewId) {
-            const wrap = document.getElementById(previewId);
-            const img  = document.getElementById(previewId + 'Img');
+        function previewImage(input, id) {
+            const wrap = document.getElementById(id);
+            const img  = document.getElementById(id + 'Img');
             if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => { img.src = e.target.result; wrap.style.display = 'block'; };
-                reader.readAsDataURL(input.files[0]);
+                const r = new FileReader();
+                r.onload = e => { img.src = e.target.result; wrap.style.display = 'block'; };
+                r.readAsDataURL(input.files[0]);
             }
         }
     </script>
 }
-

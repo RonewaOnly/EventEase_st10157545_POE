@@ -1,17 +1,12 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@model EventEase_st10157545_POE.Models.VenueViewModel
+﻿@model EventEase_st10157545_POE.Models.VenueViewModel
 @{
     ViewData["Title"] = "Edit Venue";
 }
-
 
 <div class="page-header">
     <h1>Edit Venue</h1>
     <a asp-action="Index" class="btn btn-secondary">← Back</a>
 </div>
-
 
 <div class="card" style="max-width:720px">
     <div class="card-body">
@@ -39,9 +34,27 @@
                     <input asp-for="PricePerDay" type="number" step="0.01" min="0" class="form-control" />
                     <span asp-validation-for="PricePerDay" class="field-validation-error"></span>
                 </div>
+                <div class="form-group full">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                </div>
 
+                <!-- Part 3: Availability toggle -->
+                <div class="form-group full" style="background:var(--clr-bg);border-radius:8px;padding:14px 16px">
+                    <div style="font-weight:600;font-size:13px;margin-bottom:10px">Availability Settings</div>
+                    <label class="checkbox-label" style="margin-bottom:8px">
+                        <input asp-for="IsActive" type="checkbox" /> Active (visible to booking specialists)
+                    </label>
+                    <br />
+                    <label class="checkbox-label">
+                        <input asp-for="IsAvailable" type="checkbox" /> Available for booking
+                    </label>
+                    <small class="text-muted" style="display:block;margin-top:6px">
+                        Uncheck "Available for booking" to temporarily block new bookings
+                        (e.g. during renovation) without fully deactivating the venue.
+                    </small>
+                </div>
 
-                <!-- Current image display -->
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
                     <div class="form-group full">
@@ -51,33 +64,16 @@
                         </div>
                     </div>
                 }
+                <input type="hidden" asp-for="ImageUrl" />
 
-
-                <!-- Image upload — leave blank to keep existing -->
                 <div class="form-group full">
                     <label asp-for="ImageFile"></label>
                     <input asp-for="ImageFile" type="file" accept="image/jpeg,image/png,image/gif,image/webp"
                            class="form-control" onchange="previewImage(this,'venuePreview')" />
-                    <small class="text-muted">Upload a new image to replace the current one. Leave blank to keep existing.</small>
-                    <span asp-validation-for="ImageFile" class="field-validation-error"></span>
+                    <small class="text-muted">Leave blank to keep existing image.</small>
                     <div id="venuePreview" class="img-preview-wrap" style="display:none;margin-top:10px">
-                        <img id="venuePreviewImg" src="" alt="New image preview" class="img-preview" />
+                        <img id="venuePreviewImg" src="" alt="New preview" class="img-preview" />
                     </div>
-                </div>
-
-
-                <!-- Keep the stored URL so it isn't wiped when no new file is chosen -->
-                <input type="hidden" asp-for="ImageUrl" />
-
-
-                <div class="form-group full">
-                    <label asp-for="Description"></label>
-                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-                </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input asp-for="IsActive" type="checkbox" /> Active
-                    </label>
                 </div>
             </div>
             <div class="btn-group mt-4">
@@ -88,18 +84,16 @@
     </div>
 </div>
 
-
 @section Scripts {
     <script>
-        function previewImage(input, previewId) {
-            const wrap = document.getElementById(previewId);
-            const img  = document.getElementById(previewId + 'Img');
+        function previewImage(input, id) {
+            const wrap = document.getElementById(id);
+            const img  = document.getElementById(id + 'Img');
             if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => { img.src = e.target.result; wrap.style.display = 'block'; };
-                reader.readAsDataURL(input.files[0]);
+                const r = new FileReader();
+                r.onload = e => { img.src = e.target.result; wrap.style.display = 'block'; };
+                r.readAsDataURL(input.files[0]);
             }
         }
     </script>
 }
-

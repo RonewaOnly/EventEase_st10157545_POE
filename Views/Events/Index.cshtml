@@ -1,41 +1,40 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@model IEnumerable<EventEase_st10157545_POE.Models.EventViewModel>
+﻿@model EventEase_st10157545_POE.Models.ViewModels.EventSearchViewModel
 @{
     ViewData["Title"] = "Events";
 }
 
 <div class="page-header">
-    <div>
-        <h1>Events</h1>
-        <p>Pre-load events before a venue is confirmed</p>
-    </div>
+    <div><h1>Events</h1><p>Manage events and pre-load before venue confirmation</p></div>
     <a asp-action="Create" class="btn btn-primary">+ Add Event</a>
 </div>
 
-<!-- Enhanced search bar with date range -->
 <form method="get" class="search-bar">
     <div class="form-group">
         <label>Search</label>
-        <input name="search" value="@ViewData["Search"]" class="form-control" placeholder="Event name or description…" />
+        <input name="SearchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Name or description…" />
+    </div>
+    <div class="form-group">
+        <label>Event Type</label>
+        <select name="EventTypeFilter" class="form-control" asp-items="Model.EventTypes">
+            <option value="">All types</option>
+        </select>
     </div>
     <div class="form-group">
         <label>Status</label>
-        <select name="status" class="form-control">
+        <select name="StatusFilter" class="form-control">
             <option value="">All statuses</option>
-            <option value="Pending" selected="@(ViewData["Status"]?.ToString() == "Pending")">Pending (no venue)</option>
-            <option value="Confirmed" selected="@(ViewData["Status"]?.ToString() == "Confirmed")">Confirmed</option>
-            <option value="Cancelled" selected="@(ViewData["Status"]?.ToString() == "Cancelled")">Cancelled</option>
+            <option value="Pending" selected="@(Model.StatusFilter == "Pending")">Pending</option>
+            <option value="Confirmed" selected="@(Model.StatusFilter == "Confirmed")">Confirmed</option>
+            <option value="Cancelled" selected="@(Model.StatusFilter == "Cancelled")">Cancelled</option>
         </select>
     </div>
     <div class="form-group">
         <label>From date</label>
-        <input name="fromDate" type="date" value="@(((DateTime?)ViewData["FromDate"])?.ToString("yyyy-MM-dd"))" class="form-control" />
+        <input name="FromDate" type="date" value="@Model.FromDate?.ToString("yyyy-MM-dd")" class="form-control" />
     </div>
     <div class="form-group">
         <label>To date</label>
-        <input name="toDate" type="date" value="@(((DateTime?)ViewData["ToDate"])?.ToString("yyyy-MM-dd"))" class="form-control" />
+        <input name="ToDate" type="date" value="@Model.ToDate?.ToString("yyyy-MM-dd")" class="form-control" />
     </div>
     <div class="form-group" style="justify-content:flex-end">
         <button type="submit" class="btn btn-primary">Filter</button>
@@ -51,37 +50,45 @@
                     <th>Image</th>
                     <th>#</th>
                     <th>Event Name</th>
+                    <th>Event Type</th>
                     <th>Preferred Date</th>
-                    <th>Expected Guests</th>
+                    <th>Guests</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @if (!Model.Any())
+                @if (!Model.Events.Any())
                 {
-                    <tr><td colspan="7" class="text-muted" style="padding:24px;text-align:center">No events found.</td></tr>
+                    <tr><td colspan="8" class="text-muted" style="padding:24px;text-align:center">No events found.</td></tr>
                 }
-                @foreach (var e in Model)
+                @foreach (var e in Model.Events)
                 {
                     <tr>
                         <td style="width:56px">
                             @if (!string.IsNullOrEmpty(e.ImageURL))
                             {
-                                <img src="@e.ImageURL" alt="@e.EventName"
-                                     style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--clr-border)" />
+                                <img src="@e.ImageURL" alt="" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--clr-border)" />
                             }
                             else
                             {
-                                <div style="width:48px;height:48px;border-radius:6px;border:1px solid var(--clr-border);background:var(--clr-bg);display:flex;align-items:center;justify-content:center">
-                                    <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" style="opacity:0.3">
-                                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
+
+                                <div style="width:48px;height:48px;border-radius:6px;border:1px solid var(--clr-border);background:var(--clr-bg)"></div>
                             }
                         </td>
                         <td>@e.EventID</td>
                         <td>@e.EventName</td>
+                        <td>
+                            @if (e.EventType != null)
+                            {
+                                <span class="badge badge-confirmed" style="font-size:11px">@e.EventType.TypeName</span>
+                            }
+                            else
+                            {
+
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
                         <td>@(e.PreferredDate?.ToString("dd MMM yyyy") ?? "—")</td>
                         <td>@(e.ExpectedGuests?.ToString("N0") ?? "—")</td>
                         <td><span class="badge badge-@e.Status.ToLower()">@e.Status</span></td>

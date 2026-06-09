@@ -1,36 +1,29 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@model EventEase_st10157545_POE.Models.ViewModels.BookingSearchViewModel
+﻿@using EventEase_st10157545_POE.Models.ViewModels
+@model BookingSearchViewModel
 @{
     ViewData["Title"] = "Bookings";
 }
 
-
 <div class="page-header">
-    <div>
-        <h1>Bookings</h1>
-        <p>Search, filter and manage all venue bookings</p>
-    </div>
-    <a asp-action="Create" class="btn btn-primary">
-        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-        </svg>
-        New Booking
-    </a>
+    <div><h1>Bookings</h1><p>Search, filter and manage all venue bookings</p></div>
+    <a asp-action="Create" class="btn btn-primary">+ New Booking</a>
 </div>
 
-
-<!-- Enhanced search bar -->
 <form method="get" class="search-bar">
     <div class="form-group">
         <label>Search</label>
         <input name="SearchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Customer, venue or event…" />
     </div>
     <div class="form-group">
+        <label>Event Type</label>
+        <select name="EventTypeFilter" class="form-control" asp-items="Model.EventTypes">
+            <option value="">All types</option>
+        </select>
+    </div>
+    <div class="form-group">
         <label>Status</label>
         <select name="StatusFilter" class="form-control">
-            <option value="">All statuses</option>
+            <option value="">All</option>
             <option value="Confirmed" selected="@(Model.StatusFilter == "Confirmed")">Confirmed</option>
             <option value="Pending" selected="@(Model.StatusFilter == "Pending")">Pending</option>
             <option value="Cancelled" selected="@(Model.StatusFilter == "Cancelled")">Cancelled</option>
@@ -56,35 +49,15 @@
     </div>
 </form>
 
-
 <!-- Summary strip -->
 <div class="booking-summary-strip">
-    <div class="bss-item">
-        <span class="bss-num">@Model.Bookings.Count</span>
-        <span class="bss-label">results</span>
-    </div>
-    <div class="bss-item">
-        <span class="bss-num" style="color:var(--clr-primary)">@Model.Bookings.Count(b => b.Status == "Confirmed")</span>
-        <span class="bss-label">confirmed</span>
-    </div>
-    <div class="bss-item">
-        <span class="bss-num" style="color:var(--clr-amber)">@Model.Bookings.Count(b => b.Status == "Pending")</span>
-        <span class="bss-label">pending</span>
-    </div>
-    <div class="bss-item">
-        <span class="bss-num" style="color:var(--clr-text-muted)">@Model.Bookings.Count(b => b.Status == "Cancelled")</span>
-        <span class="bss-label">cancelled</span>
-    </div>
-    <div class="bss-item">
-        <span class="bss-num" style="color:var(--clr-primary)">
-            R @Model.Bookings.Where(b => b.Status == "Confirmed").Sum(b => b.TotalPrice).ToString("N0")
-        </span>
-        <span class="bss-label">confirmed revenue</span>
-    </div>
+    <div class="bss-item"><span class="bss-num">@Model.Bookings.Count</span><span class="bss-label">results</span></div>
+    <div class="bss-item"><span class="bss-num" style="color:var(--clr-primary)">@Model.Bookings.Count(b => b.Status == "Confirmed")</span><span class="bss-label">confirmed</span></div>
+    <div class="bss-item"><span class="bss-num" style="color:var(--clr-amber)">@Model.Bookings.Count(b => b.Status == "Pending")</span><span class="bss-label">pending</span></div>
+    <div class="bss-item"><span class="bss-num" style="color:var(--clr-text-muted)">@Model.Bookings.Count(b => b.Status == "Cancelled")</span><span class="bss-label">cancelled</span></div>
+    <div class="bss-item"><span class="bss-num" style="color:var(--clr-primary)">R @Model.Bookings.Where(b => b.Status == "Confirmed").Sum(b => b.TotalPrice).ToString("N0")</span><span class="bss-label">revenue</span></div>
 </div>
 
-
-<!-- Consolidated bookings table -->
 <div class="card">
     <div class="table-wrap">
         <table>
@@ -93,6 +66,7 @@
                     <th>#</th>
                     <th>Customer</th>
                     <th>Event</th>
+                    <th>Event Type</th>
                     <th>Venue</th>
                     <th>Date</th>
                     <th>Time</th>
@@ -106,40 +80,38 @@
             <tbody>
                 @if (!Model.Bookings.Any())
                 {
-                    <tr>
-                        <td colspan="11" class="text-muted" style="padding:32px;text-align:center">
-                            No bookings match your search criteria.
-                        </td>
-                    </tr>
+                    <tr><td colspan="12" class="text-muted" style="padding:32px;text-align:center">No bookings match your search criteria.</td></tr>
                 }
                 @foreach (var b in Model.Bookings)
                 {
                     <tr class="booking-row booking-@b.Status.ToLower()">
-                        <td>
-                            <a asp-action="Details" asp-route-id="@b.BookingID"
-                               style="font-weight:500">#@b.BookingID</a>
-                        </td>
+                        <td><a asp-action="Details" asp-route-id="@b.BookingID" style="font-weight:500">#@b.BookingID</a></td>
                         <td>
                             <div style="font-weight:500">@b.Customer?.FullName</div>
                             <div class="text-muted" style="font-size:11px">@b.Customer?.phoneNumber</div>
                         </td>
                         <td>@b.Event?.EventName</td>
                         <td>
+                            @if (b.Event?.EventType != null)
+                            {
+                                <span class="badge badge-confirmed" style="font-size:10px">@b.Event.EventType.TypeName</span>
+                            }
+                            else
+                            {
+
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+                        <td>
                             <div>@b.Venue?.VenueName</div>
                             <div class="text-muted" style="font-size:11px">@b.Venue?.Location</div>
                         </td>
                         <td>@b.EventDate.ToString("dd MMM yyyy")</td>
-                        <td style="white-space:nowrap">
-                            @b.StartTime.ToString(@"hh\:mm") – @b.EndTime.ToString(@"hh\:mm")
-                        </td>
+                        <td style="white-space:nowrap">@b.StartTime.ToString(@"hh\:mm") – @b.EndTime.ToString(@"hh\:mm")</td>
                         <td>@b.GuestCount.ToString("N0")</td>
-                        <td style="font-weight:500;color:var(--clr-primary)">
-                            R @b.TotalPrice.ToString("N2")
-                        </td>
+                        <td style="font-weight:500;color:var(--clr-primary)">R @b.TotalPrice.ToString("N2")</td>
                         <td class="text-muted" style="font-size:12px">@b.Specialist?.FullName</td>
-                        <td>
-                            <span class="badge badge-@b.Status.ToLower()">@b.Status</span>
-                        </td>
+                        <td><span class="badge badge-@b.Status.ToLower()">@b.Status</span></td>
                         <td>
                             <div class="btn-group">
                                 <a asp-action="Details" asp-route-id="@b.BookingID" class="btn btn-secondary btn-sm">View</a>
@@ -147,7 +119,7 @@
                                 {
                                     <a asp-action="Edit" asp-route-id="@b.BookingID" class="btn btn-secondary btn-sm">Edit</a>
                                     <form asp-action="Cancel" asp-route-id="@b.BookingID" method="post" style="display:inline"
-                                          onsubmit="return confirm('Cancel booking #@b.BookingID? The venue slot will be freed.')">
+                                          onsubmit="return confirm('Cancel booking #@b.BookingID?')">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn btn-warning btn-sm">Cancel</button>
                                     </form>
@@ -160,4 +132,3 @@
         </table>
     </div>
 </div>
-

@@ -1,7 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@model EventEase_st10157545_POE.Models.EventViewModel
+﻿@model EventEase_st10157545_POE.Models.EventViewModel
 @{
     ViewData["Title"] = "Edit Event";
 }
@@ -22,6 +19,15 @@
                     <input asp-for="EventName" class="form-control" />
                     <span asp-validation-for="EventName" class="field-validation-error"></span>
                 </div>
+
+                <!-- Part 3: Event Type dropdown -->
+                <div class="form-group full">
+                    <label asp-for="EventTypeID"></label>
+                    <select asp-for="EventTypeID" asp-items="ViewBag.EventTypes" class="form-control">
+                        <option value="">— Select event type —</option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label asp-for="PreferredDate"></label>
                     <input asp-for="PreferredDate" type="date" class="form-control" />
@@ -50,7 +56,7 @@
                     <div class="form-group full">
                         <label>Current Image</label>
                         <div style="margin-top:6px">
-                            <img src="@Model.ImageURL" alt="Current event image" class="img-preview" />
+                            <img src="@Model.ImageURL" alt="Current" class="img-preview" />
                         </div>
                     </div>
                 }
@@ -59,11 +65,10 @@
                 <div class="form-group full">
                     <label asp-for="ImageFile"></label>
                     <input asp-for="ImageFile" type="file" accept="image/jpeg,image/png,image/gif,image/webp"
-                           class="form-control" onchange="previewImage(this,'eventPreview')" />
-                    <small class="text-muted">Upload to replace current image. Leave blank to keep existing.</small>
-                    <span asp-validation-for="ImageFile" class="field-validation-error"></span>
-                    <div id="eventPreview" class="img-preview-wrap" style="display:none;margin-top:10px">
-                        <img id="eventPreviewImg" src="" alt="New image preview" class="img-preview" />
+                           class="form-control" onchange="previewImage(this,'evtPreview')" />
+                    <small class="text-muted">Leave blank to keep existing image.</small>
+                    <div id="evtPreview" class="img-preview-wrap" style="display:none;margin-top:10px">
+                        <img id="evtPreviewImg" src="" alt="New preview" class="img-preview" />
                     </div>
                 </div>
             </div>
@@ -77,13 +82,13 @@
 
 @section Scripts {
     <script>
-        function previewImage(input, previewId) {
-            const wrap = document.getElementById(previewId);
-            const img  = document.getElementById(previewId + 'Img');
+        function previewImage(input, id) {
+            const wrap = document.getElementById(id);
+            const img  = document.getElementById(id + 'Img');
             if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => { img.src = e.target.result; wrap.style.display = 'block'; };
-                reader.readAsDataURL(input.files[0]);
+                const r = new FileReader();
+                r.onload = e => { img.src = e.target.result; wrap.style.display = 'block'; };
+                r.readAsDataURL(input.files[0]);
             }
         }
     </script>

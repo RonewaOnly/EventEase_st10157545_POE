@@ -1,82 +1,76 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model IEnumerable<EventEase_st10157545_POE.Models.VenueViewModel>
-@{
-    ViewData["Title"] = "Venues";
-}
+@* @model IEnumerable<EventEase_st10157545_POE.Models.VenueViewModel>
+ *@
+ @model EventEase_st10157545_POE.Models.ViewModels.VenueSearchViewModel
+@{ ViewData["Title"] = "Venues"; }
 
 <div class="page-header">
-    <div>
-        <h1>Venues</h1>
-        <p>Manage all available event venues</p>
-    </div>
+    <div><h1>Venues</h1><p>Manage all event venues</p></div>
     <a asp-action="Create" class="btn btn-primary">+ Add Venue</a>
 </div>
 
-<!-- Enhanced search & filter bar -->
 <form method="get" class="search-bar">
     <div class="form-group">
         <label>Search</label>
-        <input name="search" value="@ViewData["Search"]" class="form-control" placeholder="Name, location or description…" />
+        <input name="SearchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Name, location…" />
     </div>
     <div class="form-group">
         <label>Min capacity</label>
-        <input name="minCapacity" type="number" min="1" value="@ViewData["MinCapacity"]" class="form-control" placeholder="e.g. 50" />
+        <input name="MinCapacity" type="number" value="@Model.MinCapacity" class="form-control" placeholder="e.g. 50" />
     </div>
     <div class="form-group">
         <label>Max capacity</label>
-        <input name="maxCapacity" type="number" min="1" value="@ViewData["MaxCapacity"]" class="form-control" placeholder="e.g. 500" />
+        <input name="MaxCapacity" type="number" value="@Model.MaxCapacity" class="form-control" placeholder="e.g. 500" />
     </div>
     <div class="form-group">
         <label>Min price (R)</label>
-        <input name="minPrice" type="number" step="0.01" value="@ViewData["MinPrice"]" class="form-control" placeholder="e.g. 1000" />
+        <input name="MinPrice" type="number" step="0.01" value="@Model.MinPrice" class="form-control" placeholder="e.g. 1000" />
     </div>
     <div class="form-group">
         <label>Max price (R)</label>
-        <input name="maxPrice" type="number" step="0.01" value="@ViewData["MaxPrice"]" class="form-control" placeholder="e.g. 10000" />
+        <input name="MaxPrice" type="number" step="0.01" value="@Model.MaxPrice" class="form-control" placeholder="e.g. 10000" />
     </div>
-    <div class="form-group" style="justify-content:flex-end">
+    <div class="form-group" style="justify-content:flex-end;align-items:flex-end">
+        <label class="checkbox-label" style="margin-bottom:8px">
+            <input name="AvailableOnly" type="checkbox" value="true" @(Model.AvailableOnly ? "checked" : "") />
+            Available only
+        </label>
         <button type="submit" class="btn btn-primary">Filter</button>
         <a asp-action="Index" class="btn btn-secondary">Clear</a>
     </div>
 </form>
 
-@if (!Model.Any())
+@if (!Model.Venues.Any())
 {
-    <p class="text-muted">No venues match your search. <a asp-action="Create">Add a new venue.</a></p>
+    <p class="text-muted" style="margin-top:20px">No venues match your filters. <a asp-action="Create">Add a venue</a>.</p>
 }
 else
 {
     <div class="venue-grid">
-        @foreach (var v in Model)
+        @foreach (var v in Model.Venues)
         {
             <div class="venue-card">
                 @if (!string.IsNullOrEmpty(v.ImageUrl))
-                {
-                    <img src="@v.ImageUrl" alt="@v.VenueName" class="venue-card-img" />
-                }
+                { <img src="@v.ImageUrl" alt="@v.VenueName" class="venue-card-img" /> }
                 else
-                {
-                    <div class="venue-card-img venue-card-no-img">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32">
-                            <rect x="3" y="3" width="18" height="18" rx="2" />
-                            <path d="m21 15-5-5L5 21" />
-                            <circle cx="8.5" cy="8.5" r="1.5" />
-                        </svg>
-                        <span>No image</span>
-                    </div>
-                }
+                { <div class="venue-card-img venue-card-no-img"><span>No image</span></div> }
                 <div class="venue-card-body">
-                    <div class="venue-card-title">@v.VenueName</div>
-                    <div class="venue-card-meta">@v.Location</div>
-                    <div class="venue-card-meta">@v.Capacity guests max</div>
-                    <div class="venue-card-price">R @v.PricePerDay.Value.ToString("N2") / day</div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                        <div class="venue-card-title">@v.VenueName</div>
+                        @if (!v.IsAvailable)
+                        { <span class="badge badge-cancelled">Unavailable</span> }
+                        else
+                        { <span class="badge badge-confirmed">Available</span> }
+                    </div>
+                    <div class="venue-card-meta">@v.Location · @v.Capacity guests max</div>
+                    <div class="venue-card-price">R @v.PricePerDay?.ToString("N2") / day</div>
                     <div class="btn-group mt-4">
-                        <a asp-action="Details" asp-route-id="@v.VenueID" class="btn btn-secondary btn-sm">Details</a>
-                        <a asp-action="Edit" asp-route-id="@v.VenueID" class="btn btn-secondary btn-sm">Edit</a>
+                        <a asp-action="Details"      asp-route-id="@v.VenueID" class="btn btn-secondary btn-sm">Details</a>
+                        <a asp-action="Edit"          asp-route-id="@v.VenueID" class="btn btn-secondary btn-sm">Edit</a>
                         <a asp-action="Availability" asp-route-id="@v.VenueID" class="btn btn-secondary btn-sm">Availability</a>
-                        <a asp-action="Delete" asp-route-id="@v.VenueID" class="btn btn-danger btn-sm">Delete</a>
+                        <a asp-action="Delete"        asp-route-id="@v.VenueID" class="btn btn-danger btn-sm">Delete</a>
                     </div>
                 </div>
             </div>
