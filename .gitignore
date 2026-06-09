@@ -5,6 +5,8 @@
 
 # file for environment variable for database and other connection strings
 appsettings.Development.json
+appsettings.json
+
 
 # User-specific files
 *.rsuser

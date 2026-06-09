@@ -16,9 +16,12 @@ namespace EventEase_st10157545_POE.Data
 
         public DbSet<Booking> Bookings { get; set; }
 
-        public DbSet<VenueAvaliabilityViewModel> VenueSchedules { get; set; }
+        public DbSet<VenueAvaliabilityViewModel> VenueSchedules { get; set; } // Add DbSet for VenueAvaliabilityViewModel
 
-        public DbSet<AuditLogViewModel> AuditLog { get; set; }
+        public DbSet<AuditLogViewModel> AuditLog { get; set; } // Add DbSet for AuditLogViewModel
+
+        public DbSet<EventType> EventTypes { get; set; }  // Add DbSet for EventType
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -60,6 +63,20 @@ namespace EventEase_st10157545_POE.Data
                 Password = "$2b$11$zWmUQTosMUfdINFVTppjbOmy6W5kuhO9CyP6Sc4sZzCsA3trwcO0y",
                 Role = "Admin"
             });
+
+            // Seed: EventType lookup table
+            modelBuilder.Entity<EventType>().HasData(
+                new EventType { EventTypeID = 1, TypeName = "Wedding", Description = "Wedding ceremonies and receptions", IsActive = true },
+                new EventType { EventTypeID = 2, TypeName = "Corporate Conference", Description = "Business meetings, conferences and seminars", IsActive = true },
+                new EventType { EventTypeID = 3, TypeName = "Birthday Party", Description = "Birthday celebrations of all ages", IsActive = true },
+                new EventType { EventTypeID = 4, TypeName = "Product Launch", Description = "Product reveals and brand launch events", IsActive = true },
+                new EventType { EventTypeID = 5, TypeName = "Gala Dinner", Description = "Formal dinner and awards ceremonies", IsActive = true },
+                new EventType { EventTypeID = 6, TypeName = "Workshop / Training", Description = "Educational sessions and skills workshops", IsActive = true },
+                new EventType { EventTypeID = 7, TypeName = "Exhibition", Description = "Trade shows and public exhibitions", IsActive = true },
+                new EventType { EventTypeID = 8, TypeName = "Concert / Show", Description = "Live music, theatre and entertainment shows", IsActive = true },
+                new EventType { EventTypeID = 9, TypeName = "Sports Event", Description = "Sporting competitions and tournaments", IsActive = true },
+                new EventType { EventTypeID = 10, TypeName = "Private Function", Description = "Private gatherings and family functions", IsActive = true }
+            );
 
         }
     }

@@ -12,8 +12,10 @@ namespace EventEase_st10157545_POE
             var builder = WebApplication.CreateBuilder(args);
 
             // Add DbContext
+            // DbContext registration
             builder.Services.AddDbContext<EventEaseDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("DefaultConnection")));
 
             //Registering Services
             builder.Services.AddScoped<BookingConflictService>();
@@ -39,7 +41,9 @@ namespace EventEase_st10157545_POE
             {
                 throw new Exception("Connection string 'DefaultConnection' is null. Check your appsettings files and environment.");
             }
-            
+            Console.WriteLine("CONNECTION STRING:");
+            Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
